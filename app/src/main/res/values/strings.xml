@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">LAB4_1</string>
+    <string name="app_name">Job Seachr</string>
     <string name="ColorPickButton">Picker</string>
     <string name="EditTextButton">Edit Text</string>
     <string name="SliderButton">Slider</string>
