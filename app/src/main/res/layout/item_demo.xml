@@ -7,7 +7,8 @@
     android:layout_height="wrap_content"
     android:baselineAligned="false"
     android:paddingTop="10dp"
-    android:paddingBottom="10dp">
+    android:paddingBottom="10dp"
+    android:background="@color/white">
 
 
     <de.hdodenhof.circleimageview.CircleImageView
@@ -24,7 +25,6 @@
         android:transitionName="imageTransition"
 
         android:background="@drawable/circle"
-        android:elevation="50dp"
         tools:srcCompat="@tools:sample/avatars"/>
 
     <TextView
