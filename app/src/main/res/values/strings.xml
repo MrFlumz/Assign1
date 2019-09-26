@@ -1,0 +1,9 @@
+<resources>
+    <string name="app_name">LAB4_1</string>
+    <string name="ColorPickButton">Picker</string>
+    <string name="EditTextButton">Edit Text</string>
+    <string name="SliderButton">Slider</string>
+    <string name="SaveButton">Save</string>
+    <string name="picker_activity">Picker</string>
+
+</resources>
