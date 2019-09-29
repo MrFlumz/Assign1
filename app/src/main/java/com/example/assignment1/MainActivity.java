@@ -7,7 +7,6 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import android.app.ActivityOptions;
 import android.app.AlertDialog;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.InputType;
@@ -36,6 +35,7 @@ import com.opencsv.CSVReaderBuilder;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Locale;
 
 
 public class MainActivity extends AppCompatActivity implements JobAdapter.OnJobListener, JobAdapter.OnJobLongListener{
@@ -51,6 +51,7 @@ public class MainActivity extends AppCompatActivity implements JobAdapter.OnJobL
 
     public static final String TEXTFIELD = "textfield";
     public static final int PICKER_INPUT = 100;
+    public static final int REQUEST_NOTEACTIVITY = 100;
     Button btnPicker;
     Button btnEditText;
     Button btnSlider;
@@ -97,7 +98,8 @@ public class MainActivity extends AppCompatActivity implements JobAdapter.OnJobL
         rvJobs.setAdapter(adapter);
         rvJobs.setLayoutManager(new LinearLayoutManager(this));
         rvJobs.setItemAnimator(new SlideInUpAnimator());
-
+        Decoration itemDecoration = new Decoration(this, R.dimen.item_offset);
+        rvJobs.addItemDecoration(itemDecoration);
         builderInit();
 
         Transition fade = new Fade();
@@ -119,19 +121,11 @@ public class MainActivity extends AppCompatActivity implements JobAdapter.OnJobL
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        Toast.makeText(this, "Selected Item: " +item.getTitle(), Toast.LENGTH_SHORT).show();
+
         switch (item.getItemId()) {
-            case R.id.search_item:
-                searchAlert.show();
-                return true;
-            case R.id.upload_item:
-                // do your code
-                return true;
-            case R.id.copy_item:
-                // do your code
-                return true;
-            case R.id.print_item:
-                // do your code
+            case R.id.quit_application:
+                finish();
+                Toast.makeText(this, "Application closed", Toast.LENGTH_SHORT).show();
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
@@ -141,7 +135,7 @@ public class MainActivity extends AppCompatActivity implements JobAdapter.OnJobL
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode == PICKER_INPUT) {
+        if (requestCode == REQUEST_NOTEACTIVITY) {
             if (resultCode == RESULT_OK) {
                 TxtMain.setText("number from picker: " + data.getStringExtra(TEXTFIELD));
             }
@@ -157,27 +151,17 @@ public class MainActivity extends AppCompatActivity implements JobAdapter.OnJobL
         input.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_PASSWORD);
         searchAlert.setView(input);
 
-        // Set up the buttons
-        searchAlert.setPositiveButton("OK", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                searchText = input.getText().toString();
-                Toast.makeText(MainActivity.this, "Searching for Item: "+searchText, Toast.LENGTH_SHORT).show();
-            }
-        });
-        searchAlert.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                dialog.cancel();
-            }
-        });
+
+
     }
 
 
     @Override
     public void onJobClick(int position) {
+
+
         Toast.makeText(MainActivity.this, "Clicked on pos "+position, Toast.LENGTH_SHORT).show();
-        Intent intent = new Intent(this, PickerActivity.class);
+        Intent intent = new Intent(this, JobActivity.class);
         intent.putExtra(JOB_COMPANY, joblist.get(position).getmCompany());
         intent.putExtra(JOB_LOCATION, joblist.get(position).getmLocation());
         intent.putExtra(JOB_TITLE, joblist.get(position).getmTitle());
@@ -187,25 +171,23 @@ public class MainActivity extends AppCompatActivity implements JobAdapter.OnJobL
         final String nameOfImage = "img_"+position;
         intent.putExtra(JOB_IMAGE, nameOfImage);
         ImageView imgView = (ImageView) rvJobs.findViewHolderForAdapterPosition(position).itemView.findViewById(R.id.imgLogo);
-        TextView txtcompany = (TextView) rvJobs.findViewHolderForAdapterPosition(position).itemView.findViewById(R.id.txtCompany);
-        Pair[] pairs = new Pair[2];
+        Pair[] pairs = new Pair[1];
         pairs[0] = new Pair<View,String>(imgView,"imageTransition");
-        pairs[1] = new Pair<View,String>(txtcompany,"companyTransition");
         ActivityOptions options = ActivityOptions.makeSceneTransitionAnimation(this, pairs);
         this.startActivity(intent, options.toBundle());
     }
 
     @Override
     public boolean onJobLongClick(int position) {
-        Intent intent = new Intent(this, SliderActivity.class);
+        Intent intent = new Intent(this, NoteActivity.class);
         intent.putExtra(JOB_COMPANY, joblist.get(position).getmCompany());
         intent.putExtra(JOB_LOCATION, joblist.get(position).getmLocation());
         intent.putExtra(JOB_TITLE, joblist.get(position).getmTitle());
         intent.putExtra(JOB_DESCRIPTION, joblist.get(position).getmDescription());
         intent.putExtra(JOB_STATUS, joblist.get(position).getmApplied());
-        intent.putExtra(JOB_SCORE, Double.toString(joblist.get(position).getmScore()));
+        intent.putExtra(JOB_SCORE, String.format(Locale.US, "%.1f", joblist.get(position).getmScore()));
         intent.putExtra(JOB_POSITION,position);
-        this.startActivity(intent);
+        this.startActivityForResult(intent, REQUEST_NOTEACTIVITY);
         return true;
     }
 }

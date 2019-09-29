@@ -13,9 +13,9 @@
             android:name="com.google.android.actions"
             android:resource="@menu/options_menu" />
 
-        <activity android:name="com.example.assignment1.SliderActivity" />
-        <activity android:name="com.example.assignment1.JobActivity" />
-        <activity android:name="com.example.assignment1.PickerActivity" />
+        <activity android:name="com.example.assignment1.NoteActivity" />
+        <activity android:name="com.example.assignment1.JobActivity"
+                    android:windowSoftInputMode="stateHidden" />
         <activity android:name="com.example.assignment1.MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

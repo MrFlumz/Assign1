@@ -5,5 +5,7 @@
     <string name="SliderButton">Slider</string>
     <string name="SaveButton">Save</string>
     <string name="picker_activity">Picker</string>
+    <string name="Applied">Applied</string>
+    <string name="AppliedNot">Not Applied</string>
 
 </resources>

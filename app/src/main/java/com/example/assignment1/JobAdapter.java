@@ -17,6 +17,7 @@ import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.List;
+import java.util.Locale;
 
 public class JobAdapter extends RecyclerView.Adapter<JobAdapter.ViewHolder> {
 
@@ -57,7 +58,8 @@ public class JobAdapter extends RecyclerView.Adapter<JobAdapter.ViewHolder> {
         // Sætter tækst i hver viewholder
         viewHolder.txtCompany.setText(jobs.getmCompany());
         viewHolder.txtTitle.setText(jobs.getmTitle());
-        viewHolder.txtScore.setText(Double.toString(mJobs.get(position).getmScore()));
+
+        viewHolder.txtScore.setText(String.format(Locale.US,"%.1f", mJobs.get(position).getmScore()));
 
         // Applied ændrer farve efter om der er søgt eller ej
 
@@ -138,5 +140,6 @@ public class JobAdapter extends RecyclerView.Adapter<JobAdapter.ViewHolder> {
     public interface OnJobLongListener{
         boolean onJobLongClick(int position);
     }
+
 
 }
