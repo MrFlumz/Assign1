@@ -1,5 +1,6 @@
 package com.example.assignment1;
 
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
@@ -7,15 +8,15 @@ import android.graphics.Color;
 import android.graphics.PorterDuff;
 import android.graphics.PorterDuffColorFilter;
 import android.os.Bundle;
-import android.view.MotionEvent;
+import android.util.Log;
 import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
+import android.widget.Button;
 import android.widget.CompoundButton;
 import android.widget.SeekBar;
 import android.widget.Switch;
 import android.widget.TextView;
-import android.widget.CompoundButton;
 
 public class NoteActivity extends AppCompatActivity {
 
@@ -25,6 +26,17 @@ public class NoteActivity extends AppCompatActivity {
     String newScore;
     boolean applied;
     TextView txtApplied;
+    Button btnSave;
+    Button btnCancel;
+    TextView txtCompany;
+    TextView txtLocation;
+    TextView txtStatus;
+    TextView txtNote;
+    Switch switchApplied;
+    SeekBar seekBar;
+    String score;
+    int position = 0;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -32,19 +44,25 @@ public class NoteActivity extends AppCompatActivity {
         setContentView(R.layout.activity_note);
         this.setTitle("Slider");
 
-        TextView txtCompany = findViewById(R.id.txtCompany);
-        TextView txtLocation = findViewById(R.id.txtLocation);
-        final Switch switchApplied = findViewById(R.id.SwitchApplied);
-        TextView txtStatus = findViewById(R.id.txtStatus);
-        SeekBar seekBar = findViewById(R.id.seekBar);
+        txtCompany = findViewById(R.id.txtCompany);
+        txtLocation = findViewById(R.id.txtLocation);
+        switchApplied = findViewById(R.id.SwitchApplied);
+        txtStatus = findViewById(R.id.txtStatus);
+        seekBar = findViewById(R.id.seekBar);
         txtApplied = findViewById(R.id.txtApplied);
         txtScore = findViewById(R.id.txtScore);
+        btnCancel = findViewById(R.id.btnSave);
+        btnSave = findViewById(R.id.btnSave);
+        txtNote = findViewById(R.id.txtNote);
         intent = getIntent();
-        applied = Boolean.parseBoolean(intent.getStringExtra(MainActivity.JOB_STATUS));
+        position = intent.getIntExtra(MainActivity.JOB_INDEX, -1);
+        applied = intent.getBooleanExtra(MainActivity.JOB_STATUS,false);
+        Log.d("hejhej", Boolean.toString(applied));
         setAppliedText(applied);
         txtCompany.setText(intent.getStringExtra(MainActivity.JOB_COMPANY));
         txtLocation.setText(intent.getStringExtra(MainActivity.JOB_LOCATION));
-        String score = intent.getStringExtra(MainActivity.JOB_SCORE);
+        txtNote.setText(intent.getStringExtra(MainActivity.JOB_NOTE));
+        score = intent.getStringExtra(MainActivity.JOB_SCORE);
         txtScore.setText(score);
         job = new Jobs("", "", "", ""); // is only used to get color conversion
         String color = job.setmStatusColor(Double.parseDouble(intent.getStringExtra(MainActivity.JOB_SCORE)));
@@ -68,8 +86,8 @@ public class NoteActivity extends AppCompatActivity {
                 txtScore.getBackground().setColorFilter(colorfilter);
                 seekBar.getThumb().setColorFilter(colorfilter);
                 seekBar.getProgressDrawable().setColorFilter(colorfilter);
-                newScore = Double.toString((double) i / 10);
-                txtScore.setText(newScore);
+                score = Double.toString((double) i / 10);
+                txtScore.setText(score);
 
                 if (i == 100) {
                     final Animation animShake = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.shake);
@@ -88,6 +106,29 @@ public class NoteActivity extends AppCompatActivity {
             }
         });
 
+        btnCancel.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                setResult(RESULT_CANCELED);
+                finish();
+            }
+        });
+
+        btnSave.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent returnIntent = new Intent();
+                returnIntent.putExtra(MainActivity.JOB_SCORE,score);
+                returnIntent.putExtra(MainActivity.JOB_STATUS, applied);
+                returnIntent.putExtra(MainActivity.JOB_NOTE,txtNote.getText());
+                Log.d("helolo", Integer.toString(position));
+                returnIntent.putExtra(MainActivity.JOB_INDEX, position);
+                setResult(RESULT_OK,returnIntent);
+                finish();
+            }
+        });
+
+
 
         switchApplied.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
@@ -101,6 +142,11 @@ public class NoteActivity extends AppCompatActivity {
                 }
             }
         });
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
     }
 
     public void setAppliedText(boolean applied){

@@ -20,23 +20,24 @@
         android:layout_marginTop="10dp"
         android:layout_marginEnd="10dp"
         android:layout_marginBottom="10dp">
-    <EditText
-        android:id="@+id/txtNote"
-        android:layout_width="392dp"
-        android:layout_height="0dp"
-        android:layout_marginStart="10dp"
-        android:layout_marginTop="10dp"
-        android:layout_marginEnd="10dp"
-        android:layout_marginBottom="10dp"
-        android:gravity="center_vertical|left"
-        android:text="Notes"
-        android:textColor="@color/border_color"
-        android:textSize="24sp"
-        app:layout_constraintBottom_toTopOf="@+id/bar3"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/bar1" />
+
+        <EditText
+            android:id="@+id/txtNote"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_marginStart="10dp"
+            android:layout_marginTop="10dp"
+            android:layout_marginEnd="10dp"
+            android:layout_marginBottom="10dp"
+            android:gravity="center_vertical|left"
+            android:text="Notes"
+            android:textAlignment="viewStart"
+            android:textColor="@color/border_color"
+            android:textSize="24sp"
+            app:layout_constraintBottom_toTopOf="@+id/bar3"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/bar1" />
 
         <View
             android:id="@+id/bar3"
@@ -124,13 +125,14 @@
         app:layout_constraintTop_toTopOf="parent" />
 
         <Button
-            android:id="@+id/btnBack"
+            android:id="@+id/btnSave"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginEnd="10dp"
             android:layout_marginBottom="30dp"
             android:elevation="40dp"
-            android:text="Button"
+            android:text="@string/btnCancel"
+            android:textSize="@dimen/btnTextSize"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toStartOf="@+id/btnSave"
             app:layout_constraintStart_toStartOf="parent" />
@@ -141,10 +143,11 @@
             android:layout_height="wrap_content"
             android:layout_marginBottom="30dp"
             android:elevation="40dp"
-            android:text="Button"
+            android:text="@string/btnSave"
+            android:textSize="@dimen/btnTextSize"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toEndOf="@+id/btnBack" />
+            app:layout_constraintStart_toEndOf="@+id/btnSave" />
 
         <SeekBar
         android:id="@+id/seekBar"

@@ -7,5 +7,7 @@
     <string name="picker_activity">Picker</string>
     <string name="Applied">Applied</string>
     <string name="AppliedNot">Not Applied</string>
+    <string name="btnCancel">Cancel</string>
+    <string name="btnSave">Save</string>
 
 </resources>

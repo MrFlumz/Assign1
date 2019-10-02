@@ -14,6 +14,8 @@ public class Jobs {
     private double mScore = 0;
     private Boolean mApplied = false;
     private String mStatusColor;
+    private String mNote = "Notes..";
+
     Random rand = new Random();
 
 
@@ -78,6 +80,7 @@ public class Jobs {
 
     public void setmScore(float mScore) {
         this.mScore = mScore;
+        setmStatusColor(mScore);
     }
 
     public void setmCompany(String mCompany) {
@@ -120,6 +123,14 @@ public class Jobs {
             joblist.add(new Jobs(list.get(i)[0], list.get(i)[1], list.get(i)[2], list.get(i)[3]));
         }
         return joblist;
+    }
+
+    public String getmNote() {
+        return mNote;
+    }
+
+    public void setmNote(String mNote) {
+        this.mNote = mNote;
     }
 
 }

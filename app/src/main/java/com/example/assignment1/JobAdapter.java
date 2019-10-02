@@ -14,6 +14,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.constraintlayout.widget.ConstraintLayout;
+import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.List;
@@ -59,17 +60,23 @@ public class JobAdapter extends RecyclerView.Adapter<JobAdapter.ViewHolder> {
         viewHolder.txtCompany.setText(jobs.getmCompany());
         viewHolder.txtTitle.setText(jobs.getmTitle());
 
-        viewHolder.txtScore.setText(String.format(Locale.US,"%.1f", mJobs.get(position).getmScore()));
+
+        // if score is 10, remove decimal as it cant fit
+        if (mJobs.get(position).getmScore()<9.9){
+            viewHolder.txtScore.setText(String.format(Locale.US,"%.1f", mJobs.get(position).getmScore()));}
+        else {
+            viewHolder.txtScore.setText(String.format(Locale.US,"%.0f", mJobs.get(position).getmScore()));}
+
 
         // Applied ændrer farve efter om der er søgt eller ej
 
         if (mJobs.get(position).getmApplied()){
             viewHolder.txtStatus.setText("APPLIED");
-            viewHolder.txtStatus.setTextColor(Color.GREEN);// should be resource
+            viewHolder.txtStatus.setTextColor(ContextCompat.getColor(mContext , R.color.applied));// should be resource
         }
         else{
             viewHolder.txtStatus.setText("NOT APP");
-            viewHolder.txtStatus.setTextColor(Color.RED);
+            viewHolder.txtStatus.setTextColor(ContextCompat.getColor(mContext , R.color.not_applied));
         }
         Log.d("heeeej", mJobs.get(position).getmStatusColor());
         PorterDuffColorFilter colorfilter = new PorterDuffColorFilter(Color.parseColor(mJobs.get(position).getmStatusColor()), PorterDuff.Mode.MULTIPLY);

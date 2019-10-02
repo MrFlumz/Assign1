@@ -2,7 +2,7 @@
 <resources>
     <color name="colorPrimary">#9C2525</color>
     <color name="colorPrimaryDark">#5F4444</color>
-    <color name="colorAccent">#8BCC7A</color>
+    <color name="colorAccent">#3C3737</color>
     <color name="background_color">#C0BCB1</color>
     <color name="border_color">#999999</color>
     <color name="white">#FFFFFF</color>
@@ -11,4 +11,7 @@
     <color name="seek_bar_progress">#FFFFFF</color>
     <color name="seek_bar_secondary_progress">#C4C4C4</color>
     <color name="border_background">#FFFFFF</color>
+
+    <color name="applied">#06AD00</color>
+    <color name="not_applied">#BB0000</color>
 </resources>
