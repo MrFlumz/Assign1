@@ -25,7 +25,9 @@ public class JobActivity extends AppCompatActivity {
     Intent returnIntent;
     String returnstr;
     Jobs job;
+    TextView txtApplied;
     int position;
+    boolean applied;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -40,16 +42,17 @@ public class JobActivity extends AppCompatActivity {
         TextView txtTitle = findViewById(R.id.txtJobtitle);
         TextView txtDescription = findViewById(R.id.txtDescription);
         TextView txtScore = findViewById(R.id.txtScore);
-        TextView txtStatus = findViewById(R.id.txtStatus);
+        TextView txtStatus = findViewById(R.id.txtStatusStatic);
         btnSave = findViewById(R.id.btnSave);
         txtNote = findViewById(R.id.txtNote);
-
+        txtApplied = findViewById(R.id.txtStatus);
         txtCompany.setText(intent.getStringExtra(MainActivity.JOB_COMPANY));
         txtLocation.setText(intent.getStringExtra(MainActivity.JOB_LOCATION));
         txtTitle.setText(intent.getStringExtra(MainActivity.JOB_TITLE));
         txtDescription.setText(intent.getStringExtra(MainActivity.JOB_DESCRIPTION));
         txtScore.setText(intent.getStringExtra(MainActivity.JOB_SCORE));
-        txtStatus.setText(intent.getStringExtra(MainActivity.JOB_STATUS));
+        applied = intent.getBooleanExtra(MainActivity.JOB_STATUS,false);
+        setAppliedText(applied);
         txtNote.setText(intent.getStringExtra(MainActivity.JOB_NOTE));
         String nameOfImage = intent.getStringExtra(MainActivity.JOB_IMAGE);
         position = intent.getIntExtra(MainActivity.JOB_INDEX, -1);
@@ -74,4 +77,14 @@ public class JobActivity extends AppCompatActivity {
         });
     }
 
+    public void setAppliedText(boolean applied){
+        if(applied){
+            txtApplied.setText(R.string.Applied);
+            txtApplied.setTextColor(Color.rgb(0,200,0));
+        }
+        else{
+            txtApplied.setText(R.string.AppliedNot);
+            txtApplied.setTextColor(Color.rgb(200,0,0));
+        }
+    }
 }

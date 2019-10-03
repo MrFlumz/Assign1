@@ -15,10 +15,11 @@
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/txtCompanybox"
-        android:layout_width="339dp"
+        android:layout_width="222dp"
         android:layout_height="0dp"
         android:layout_marginStart="10dp"
         android:layout_marginTop="10dp"
+        android:layout_marginBottom="10dp"
         android:background="@drawable/card"
         android:orientation="vertical"
         app:layout_constraintBottom_toBottomOf="parent"
@@ -26,22 +27,61 @@
         app:layout_constraintTop_toTopOf="parent">
 
         <TextView
+            android:id="@+id/txtStatus"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:layout_marginEnd="10dp"
+            android:text="XXXX"
+
+            android:textAlignment="viewStart"
+            android:textSize="20sp"
+            android:textStyle="bold"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/txtStatusStatic"
+            app:layout_constraintTop_toBottomOf="@+id/txtLocation"
+            app:layout_constraintVertical_bias="0.0" />
+
+        <TextView
+            android:id="@+id/txtStatusStatic"
+            android:layout_width="62dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="10dp"
+            android:layout_marginTop="10dp"
+
+            android:layout_marginEnd="5dp"
+            android:text="@string/Status"
+            android:textAlignment="textEnd"
+            android:textColor="@color/border_color"
+            android:textSize="20sp"
+            android:textStyle="bold"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@+id/txtStatus"
+            app:layout_constraintHorizontal_bias="1.0"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/txtLocation"
+            app:layout_constraintVertical_bias="0.0" />
+
+        <TextView
             android:id="@+id/txtCompany"
             android:layout_width="0dp"
-            android:layout_height="41dp"
-            android:layout_marginStart="8dp"
-            android:layout_marginTop="10dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="10dp"
+            android:layout_marginTop="5dp"
+            android:layout_marginEnd="10dp"
             android:text="Company"
             android:textSize="30sp"
             android:transitionName="companyTransition"
-            app:layout_constraintEnd_toStartOf="@+id/txtScore"
-            app:layout_constraintStart_toEndOf="@+id/imgLogo"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/imgLogo" />
 
         <de.hdodenhof.circleimageview.CircleImageView
             android:id="@+id/imgLogo"
-            android:layout_width="100dp"
-            android:layout_height="100dp"
+            android:layout_width="130dp"
+            android:layout_height="130dp"
 
             android:layout_marginStart="10dp"
             android:layout_marginTop="10dp"
@@ -58,18 +98,23 @@
             android:id="@+id/txtLocation"
             android:layout_width="0dp"
             android:layout_height="29dp"
-            android:layout_marginTop="136dp"
+            android:layout_marginStart="10dp"
+            android:layout_marginTop="5dp"
+            android:layout_marginEnd="10dp"
             android:text="Location"
             android:textSize="18sp"
             app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.0"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/txtCompany" />
+            app:layout_constraintTop_toBottomOf="@+id/txtJobtitle" />
 
         <TextView
             android:id="@+id/txtScore"
-            android:layout_width="70dp"
-            android:layout_height="70dp"
-            android:layout_marginEnd="10dp"
+            android:layout_width="60dp"
+            android:layout_height="60dp"
+            android:layout_marginStart="12dp"
+            android:layout_marginTop="50dp"
+            android:layout_marginBottom="50dp"
             android:background="@drawable/border"
             android:elevation="20dp"
             android:gravity="center"
@@ -77,32 +122,35 @@
             android:textColor="@color/white"
             android:textSize="40sp"
             app:layout_constraintBottom_toBottomOf="@+id/imgLogo"
-            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/imgLogo"
             app:layout_constraintTop_toTopOf="@+id/imgLogo"
             tools:text="5.5" />
 
         <TextView
             android:id="@+id/txtJobtitle"
             android:layout_width="0dp"
-            android:layout_height="34dp"
+            android:layout_height="wrap_content"
             android:layout_marginStart="10dp"
-            android:layout_marginTop="10dp"
+            android:layout_marginTop="5dp"
             android:layout_marginEnd="10dp"
-            android:layout_marginBottom="10dp"
             android:gravity="center_vertical|left"
             android:text="Jobtitle"
-            android:textSize="24sp"
-            app:layout_constraintBottom_toBottomOf="parent"
+            android:textSize="18sp"
+            app:layout_constraintBottom_toTopOf="@+id/txtLocation"
             app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.0"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/imgLogo" />
+            app:layout_constraintTop_toBottomOf="@+id/txtCompany" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 
     <ScrollView
         android:id="@+id/txtDescriptionScroll"
         android:layout_width="0dp"
         android:layout_height="0dp"
+        android:layout_marginStart="10dp"
         android:layout_marginTop="10dp"
+        android:layout_marginEnd="10dp"
+        android:layout_marginBottom="10dp"
         app:layout_constraintBottom_toBottomOf="@+id/bar2"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@+id/txtCompanybox"
@@ -110,10 +158,10 @@
 
         <TextView
             android:id="@+id/txtDescription"
-            android:layout_width="392dp"
+            android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_marginStart="10dp"
-            android:layout_marginEnd="10dp"
+            android:layout_marginStart="0dp"
+            android:layout_marginEnd="0dp"
             android:background="@drawable/card"
             android:padding="5dp"
             android:scrollbars="vertical"
@@ -126,8 +174,9 @@
         android:id="@+id/bar2"
         android:layout_width="0dp"
         android:layout_height="1dp"
+        android:layout_marginStart="10dp"
         android:layout_marginTop="5dp"
-        android:layout_marginBottom="5dp"
+        android:layout_marginEnd="10dp"
         android:background="@color/border_color"
         app:layout_constraintBottom_toTopOf="@+id/txtBottomBox"
         app:layout_constraintEnd_toEndOf="parent"
@@ -139,7 +188,9 @@
         android:layout_width="0dp"
         android:layout_height="127dp"
 
+        android:layout_marginStart="10dp"
         android:layout_marginTop="5dp"
+        android:layout_marginEnd="10dp"
         android:layout_marginBottom="10dp"
         android:background="@drawable/card"
         android:orientation="vertical"
@@ -163,22 +214,6 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
-        <TextView
-            android:id="@+id/txtStatus"
-            android:layout_width="0dp"
-            android:layout_height="26dp"
-            android:layout_marginStart="10dp"
-            android:layout_marginEnd="10dp"
-            android:text="TextView2"
-            android:textAlignment="viewStart"
-            android:textSize="18sp"
-            android:textStyle="bold"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.0"
-            app:layout_constraintStart_toStartOf="parent"
-
-            app:layout_constraintTop_toBottomOf="@+id/txtNote" />
-
         <Button
             android:id="@+id/btnSave"
             android:layout_width="wrap_content"
@@ -190,9 +225,7 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.498"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/txtStatus"
-            app:layout_constraintVertical_bias="0.826" />
+            app:layout_constraintStart_toStartOf="parent" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 
 

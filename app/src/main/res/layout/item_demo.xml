@@ -40,7 +40,7 @@
         app:layout_constraintStart_toEndOf="@+id/imgLogo" />
 
     <TextView
-        android:id="@+id/txtStatus"
+        android:id="@+id/txtStatusStatic"
         android:layout_width="0dp"
         android:layout_height="11dp"
         android:text="TextView2"

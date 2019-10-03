@@ -48,7 +48,7 @@ public class NoteActivity extends AppCompatActivity {
         txtCompany = findViewById(R.id.txtCompany);
         txtLocation = findViewById(R.id.txtLocation);
         switchApplied = findViewById(R.id.SwitchApplied);
-        txtStatus = findViewById(R.id.txtStatus);
+        txtStatus = findViewById(R.id.txtStatusStatic);
         seekBar = findViewById(R.id.seekBar);
         txtApplied = findViewById(R.id.txtApplied);
         txtScore = findViewById(R.id.txtScore);

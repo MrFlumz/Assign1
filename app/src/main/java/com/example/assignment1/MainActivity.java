@@ -9,6 +9,7 @@ import android.app.ActivityOptions;
 import android.app.AlertDialog;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.text.InputType;
 import android.transition.Fade;
 import android.transition.Transition;
@@ -54,6 +55,7 @@ public class MainActivity extends AppCompatActivity implements JobAdapter.OnJobL
     public static final int PICKER_INPUT = 101;
     public static final int REQUEST_NOTE = 102;
     public static final int REQUEST_NOTEACTIVITY = 100;
+    public static final String JOBLIST = "JOBLIST";
     Button btnPicker;
     Button btnEditText;
     Button btnSlider;
@@ -70,28 +72,39 @@ public class MainActivity extends AppCompatActivity implements JobAdapter.OnJobL
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        String next[] = {};
-        List<String[]> list = new ArrayList<String[]>();
-        CSVParser parser = new CSVParserBuilder().withSeparator(';').build();
-        try {
-            CSVReader reader = new CSVReaderBuilder(new InputStreamReader(getAssets().open("Jobs.csv"))).withCSVParser(parser).build();
-            while(true) {
-                next = reader.readNext();
-                if(next != null) {
-                    list.add(next);
-                } else {
-                    break;
-                }
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        Log.d("JJJJ", list.get(0)[0]);
-
-        joblist = Jobs.parseJobList(list);
-        Log.d("THOMAS", joblist.get(0).getmCompany());
 
         super.onCreate(savedInstanceState);
+
+        if (savedInstanceState != null){
+            //Do whatever you need with the string here, like assign it to variable.
+            joblist = (ArrayList<Jobs>)savedInstanceState.getSerializable(JOBLIST);
+        }
+        else{
+            String next[] = {};
+            List<String[]> list = new ArrayList<String[]>();
+            CSVParser parser = new CSVParserBuilder().withSeparator(';').build();
+            try {
+                CSVReader reader = new CSVReaderBuilder(new InputStreamReader(getAssets().open("Jobs.csv"))).withCSVParser(parser).build();
+                while(true) {
+                    next = reader.readNext();
+                    if(next != null) {
+                        list.add(next);
+                    } else {
+                        break;
+                    }
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            Log.d("JJJJ", list.get(0)[0]);
+
+            joblist = Jobs.parseJobList(list);
+            Log.d("THOMAS", joblist.get(0).getmCompany());
+        }
+
+
+        Log.d("THOMAS", joblist.get(0).getmCompany());
+
         setContentView(R.layout.activity_main);
         searchAlert = new AlertDialog.Builder(this);
         rvJobs = (RecyclerView) findViewById(R.id.rvDemos);
@@ -111,6 +124,7 @@ public class MainActivity extends AppCompatActivity implements JobAdapter.OnJobL
         getWindow().setEnterTransition(fade);
 
     }
+
 
 
 
@@ -170,6 +184,7 @@ public class MainActivity extends AppCompatActivity implements JobAdapter.OnJobL
     }
 
 
+
     @Override
     public void onJobClick(int position) {
 
@@ -208,4 +223,15 @@ public class MainActivity extends AppCompatActivity implements JobAdapter.OnJobL
         this.startActivityForResult(intent, REQUEST_NOTEACTIVITY);
         return true;
     }
+
+
+
+    @Override
+    public void onSaveInstanceState(Bundle savedInstanceState){
+        String someString = "this is a string";
+        savedInstanceState.putSerializable(JOBLIST, joblist);
+        //declare values before saving the state
+        super.onSaveInstanceState(savedInstanceState);
+    }
+
 }

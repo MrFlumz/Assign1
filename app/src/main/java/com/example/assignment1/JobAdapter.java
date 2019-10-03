@@ -124,7 +124,7 @@ public class JobAdapter extends RecyclerView.Adapter<JobAdapter.ViewHolder> {
             this.onJobLongListener = onJobLongListener;
             txtCompany =    itemView.findViewById(R.id.txtCompany);
             txtTitle =      itemView.findViewById(R.id.txtJobtitle);
-            txtStatus =     itemView.findViewById(R.id.txtStatus);
+            txtStatus =     itemView.findViewById(R.id.txtStatusStatic);
             txtScore =      itemView.findViewById(R.id.txtScore);
             layout =        itemView.findViewById(R.id.LayoutJobEntry);
             imgLogo =       itemView.findViewById(R.id.imgLogo);

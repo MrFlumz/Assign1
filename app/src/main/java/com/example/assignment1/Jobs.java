@@ -1,12 +1,14 @@
 package com.example.assignment1;
 
+import android.os.Parcel;
+import android.os.Parcelable;
 import android.util.Log;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
-public class Jobs {
+public class Jobs implements Parcelable {
     private String mCompany;
     private String mLocation;
     private String mTitle;
@@ -133,4 +135,52 @@ public class Jobs {
         this.mNote = mNote;
     }
 
+
+    protected Jobs(Parcel in) {
+        mCompany = in.readString();
+        mLocation = in.readString();
+        mTitle = in.readString();
+        mDescription = in.readString();
+        mScore = in.readDouble();
+        byte mAppliedVal = in.readByte();
+        mApplied = mAppliedVal == 0x02 ? null : mAppliedVal != 0x00;
+        mStatusColor = in.readString();
+        mNote = in.readString();
+        rand = (Random) in.readValue(Random.class.getClassLoader());
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeString(mCompany);
+        dest.writeString(mLocation);
+        dest.writeString(mTitle);
+        dest.writeString(mDescription);
+        dest.writeDouble(mScore);
+        if (mApplied == null) {
+            dest.writeByte((byte) (0x02));
+        } else {
+            dest.writeByte((byte) (mApplied ? 0x01 : 0x00));
+        }
+        dest.writeString(mStatusColor);
+        dest.writeString(mNote);
+        dest.writeValue(rand);
+    }
+
+    @SuppressWarnings("unused")
+    public static final Parcelable.Creator<Jobs> CREATOR = new Parcelable.Creator<Jobs>() {
+        @Override
+        public Jobs createFromParcel(Parcel in) {
+            return new Jobs(in);
+        }
+
+        @Override
+        public Jobs[] newArray(int size) {
+            return new Jobs[size];
+        }
+    };
 }
