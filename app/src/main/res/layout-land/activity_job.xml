@@ -12,16 +12,16 @@
     android:layoutAnimation="@anim/layout_slideup"
 
     >
+
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/txtCompanybox"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
+        android:layout_width="339dp"
+        android:layout_height="0dp"
         android:layout_marginStart="10dp"
         android:layout_marginTop="10dp"
-        android:layout_marginEnd="10dp"
         android:background="@drawable/card"
         android:orientation="vertical"
-        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
 
@@ -58,12 +58,11 @@
             android:id="@+id/txtLocation"
             android:layout_width="0dp"
             android:layout_height="29dp"
-            android:layout_marginStart="8dp"
-            android:layout_marginTop="10dp"
+            android:layout_marginTop="136dp"
             android:text="Location"
             android:textSize="18sp"
-            app:layout_constraintEnd_toStartOf="@+id/txtScore"
-            app:layout_constraintStart_toEndOf="@+id/imgLogo"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/txtCompany" />
 
         <TextView
@@ -74,8 +73,8 @@
             android:background="@drawable/border"
             android:elevation="20dp"
             android:gravity="center"
-            android:textColor="@color/white"
             android:text="TextView4"
+            android:textColor="@color/white"
             android:textSize="40sp"
             app:layout_constraintBottom_toBottomOf="@+id/imgLogo"
             app:layout_constraintEnd_toEndOf="parent"
@@ -96,33 +95,18 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/imgLogo"
-            />
+            app:layout_constraintTop_toBottomOf="@+id/imgLogo" />
     </androidx.constraintlayout.widget.ConstraintLayout>
-
-    <View
-        android:id="@+id/bar1"
-        android:layout_width="0dp"
-        android:layout_height="1dp"
-        android:layout_marginStart="10dp"
-        android:layout_marginTop="5dp"
-        android:layout_marginEnd="10dp"
-        android:layout_marginBottom="5dp"
-        android:background="@color/border_color"
-        app:layout_constraintBottom_toTopOf="@+id/txtDescriptionScroll"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/txtCompanybox" />
 
     <ScrollView
         android:id="@+id/txtDescriptionScroll"
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
         android:layout_height="0dp"
+        android:layout_marginTop="10dp"
         app:layout_constraintBottom_toBottomOf="@+id/bar2"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/bar1">
+        app:layout_constraintStart_toEndOf="@+id/txtCompanybox"
+        app:layout_constraintTop_toTopOf="parent">
 
         <TextView
             android:id="@+id/txtDescription"
@@ -142,31 +126,26 @@
         android:id="@+id/bar2"
         android:layout_width="0dp"
         android:layout_height="1dp"
-        android:layout_marginStart="10dp"
         android:layout_marginTop="5dp"
-        android:layout_marginEnd="10dp"
         android:layout_marginBottom="5dp"
         android:background="@color/border_color"
         app:layout_constraintBottom_toTopOf="@+id/txtBottomBox"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/txtCompanybox"
         app:layout_constraintTop_toBottomOf="@+id/txtDescriptionScroll" />
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/txtBottomBox"
         android:layout_width="0dp"
-        android:layout_height="wrap_content"
+        android:layout_height="127dp"
 
-        android:layout_marginStart="10dp"
         android:layout_marginTop="5dp"
-        android:layout_marginEnd="10dp"
         android:layout_marginBottom="10dp"
         android:background="@drawable/card"
         android:orientation="vertical"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/txtCompanybox"
         app:layout_constraintTop_toBottomOf="@+id/bar2">
 
 

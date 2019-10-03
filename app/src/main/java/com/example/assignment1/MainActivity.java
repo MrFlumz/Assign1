@@ -141,11 +141,19 @@ public class MainActivity extends AppCompatActivity implements JobAdapter.OnJobL
             if (resultCode == RESULT_OK) {
                 int pos = data.getIntExtra(JOB_INDEX, -1);
                 joblist.get(pos).setmScore((float)Double.parseDouble(data.getStringExtra(JOB_SCORE)));
+                Log.d( "hejsa", data.getStringExtra(JOB_NOTE));
                 joblist.get(pos).setmNote(data.getStringExtra(JOB_NOTE));
                 joblist.get(pos).setmApplied(data.getBooleanExtra(JOB_STATUS,false));
                 adapter.notifyDataSetChanged();
             }
         }
+        else if(requestCode == REQUEST_NOTE){
+            if (resultCode == RESULT_OK) {
+                int pos = data.getIntExtra(JOB_INDEX, -1);
+                joblist.get(pos).setmNote(data.getStringExtra(JOB_NOTE));
+            }
+        }
+
     }
 
     void builderInit(){
@@ -173,7 +181,8 @@ public class MainActivity extends AppCompatActivity implements JobAdapter.OnJobL
         intent.putExtra(JOB_TITLE, joblist.get(position).getmTitle());
         intent.putExtra(JOB_DESCRIPTION, joblist.get(position).getmDescription());
         intent.putExtra(JOB_STATUS, joblist.get(position).getmApplied());
-        intent.putExtra(JOB_SCORE, Double.toString(joblist.get(position).getmScore()));
+        intent.putExtra(JOB_SCORE,  String.format(Locale.US,"%.1f", joblist.get(position).getmScore()));
+        intent.putExtra(JOB_NOTE, joblist.get(position).getmNote());
         intent.putExtra(JOB_INDEX, position);
         final String nameOfImage = "img_"+position;
         intent.putExtra(JOB_IMAGE, nameOfImage);
@@ -181,7 +190,7 @@ public class MainActivity extends AppCompatActivity implements JobAdapter.OnJobL
         Pair[] pairs = new Pair[1];
         pairs[0] = new Pair<View,String>(imgView,"imageTransition");
         ActivityOptions options = ActivityOptions.makeSceneTransitionAnimation(this, pairs);
-        this.startActivity(intent, options.toBundle());
+
         this.startActivityForResult(intent, REQUEST_NOTE , options.toBundle());
     }
 

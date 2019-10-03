@@ -14,6 +14,7 @@ import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.Button;
 import android.widget.CompoundButton;
+import android.widget.EditText;
 import android.widget.SeekBar;
 import android.widget.Switch;
 import android.widget.TextView;
@@ -31,7 +32,7 @@ public class NoteActivity extends AppCompatActivity {
     TextView txtCompany;
     TextView txtLocation;
     TextView txtStatus;
-    TextView txtNote;
+    EditText txtNote;
     Switch switchApplied;
     SeekBar seekBar;
     String score;
@@ -120,8 +121,8 @@ public class NoteActivity extends AppCompatActivity {
                 Intent returnIntent = new Intent();
                 returnIntent.putExtra(MainActivity.JOB_SCORE,score);
                 returnIntent.putExtra(MainActivity.JOB_STATUS, applied);
-                returnIntent.putExtra(MainActivity.JOB_NOTE,txtNote.getText());
-                Log.d("helolo", Integer.toString(position));
+                returnIntent.putExtra(MainActivity.JOB_NOTE,txtNote.getText().toString());
+                Log.d("helolo", txtNote.getText().toString());
                 returnIntent.putExtra(MainActivity.JOB_INDEX, position);
                 setResult(RESULT_OK,returnIntent);
                 finish();

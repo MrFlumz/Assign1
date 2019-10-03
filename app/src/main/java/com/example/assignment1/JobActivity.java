@@ -9,7 +9,10 @@ import android.graphics.Color;
 import android.graphics.PorterDuff;
 import android.graphics.PorterDuffColorFilter;
 import android.os.Bundle;
+import android.util.Log;
+import android.view.View;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.SeekBar;
 import android.widget.TextView;
@@ -17,11 +20,12 @@ import android.widget.TextView;
 public class JobActivity extends AppCompatActivity {
 
     SeekBar SeekbarPicker;
-    TextView txtPicker;
+    EditText txtNote;
     Button btnSave;
     Intent returnIntent;
     String returnstr;
     Jobs job;
+    int position;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -37,6 +41,8 @@ public class JobActivity extends AppCompatActivity {
         TextView txtDescription = findViewById(R.id.txtDescription);
         TextView txtScore = findViewById(R.id.txtScore);
         TextView txtStatus = findViewById(R.id.txtStatus);
+        btnSave = findViewById(R.id.btnSave);
+        txtNote = findViewById(R.id.txtNote);
 
         txtCompany.setText(intent.getStringExtra(MainActivity.JOB_COMPANY));
         txtLocation.setText(intent.getStringExtra(MainActivity.JOB_LOCATION));
@@ -44,7 +50,9 @@ public class JobActivity extends AppCompatActivity {
         txtDescription.setText(intent.getStringExtra(MainActivity.JOB_DESCRIPTION));
         txtScore.setText(intent.getStringExtra(MainActivity.JOB_SCORE));
         txtStatus.setText(intent.getStringExtra(MainActivity.JOB_STATUS));
+        txtNote.setText(intent.getStringExtra(MainActivity.JOB_NOTE));
         String nameOfImage = intent.getStringExtra(MainActivity.JOB_IMAGE);
+        position = intent.getIntExtra(MainActivity.JOB_INDEX, -1);
         int resId = this.getResources().getIdentifier(nameOfImage, "drawable", this.getPackageName());
         Bitmap bitmap = BitmapFactory.decodeResource(this.getResources(), resId);
         imgLogo.setImageBitmap(bitmap);
@@ -53,5 +61,17 @@ public class JobActivity extends AppCompatActivity {
         PorterDuffColorFilter colorfilter = new PorterDuffColorFilter(Color.parseColor(color), PorterDuff.Mode.MULTIPLY);
         txtScore.getBackground().setColorFilter(colorfilter);
 
+        btnSave.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent returnIntent = new Intent();
+                returnIntent.putExtra(MainActivity.JOB_NOTE,txtNote.getText().toString());
+                Log.d("helolo", Integer.toString(position));
+                returnIntent.putExtra(MainActivity.JOB_INDEX, position);
+                setResult(RESULT_OK,returnIntent);
+                finish();
+            }
+        });
     }
+
 }
