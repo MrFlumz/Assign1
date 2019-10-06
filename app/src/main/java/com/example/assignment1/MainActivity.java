@@ -98,7 +98,7 @@ public class MainActivity extends AppCompatActivity implements JobAdapter.OnJobL
             }
             Log.d("JJJJ", list.get(0)[0]);
 
-            joblist = Jobs.parseJobList(list);
+            joblist = Jobs.parseJobList(list,this);
             Log.d("THOMAS", joblist.get(0).getmCompany());
         }
 
@@ -196,7 +196,13 @@ public class MainActivity extends AppCompatActivity implements JobAdapter.OnJobL
         intent.putExtra(JOB_TITLE, joblist.get(position).getmTitle());
         intent.putExtra(JOB_DESCRIPTION, joblist.get(position).getmDescription());
         intent.putExtra(JOB_STATUS, joblist.get(position).getmApplied());
-        intent.putExtra(JOB_SCORE,  String.format(Locale.US,"%.1f", joblist.get(position).getmScore()));
+
+        // if score is 10, remove decimal as it cant fit
+        if (joblist.get(position).getmScore()<9.9){
+            intent.putExtra(JOB_SCORE,  String.format(Locale.US,"%.1f", joblist.get(position).getmScore()));}
+        else {
+            intent.putExtra(JOB_SCORE,  String.format(Locale.US,"%.0f", joblist.get(position).getmScore()));}
+
         intent.putExtra(JOB_NOTE, joblist.get(position).getmNote());
         intent.putExtra(JOB_INDEX, position);
         final String nameOfImage = "img_"+position;
@@ -204,6 +210,7 @@ public class MainActivity extends AppCompatActivity implements JobAdapter.OnJobL
         ImageView imgView = (ImageView) rvJobs.findViewHolderForAdapterPosition(position).itemView.findViewById(R.id.imgLogo);
         Pair[] pairs = new Pair[1];
         pairs[0] = new Pair<View,String>(imgView,"imageTransition");
+
         ActivityOptions options = ActivityOptions.makeSceneTransitionAnimation(this, pairs);
 
         this.startActivityForResult(intent, REQUEST_NOTE , options.toBundle());

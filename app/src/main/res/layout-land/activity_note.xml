@@ -19,157 +19,141 @@
         android:layout_marginStart="10dp"
         android:layout_marginTop="10dp"
         android:layout_marginEnd="10dp"
-        android:layout_marginBottom="10dp">
+        android:layout_marginBottom="10dp"
+
+        >
 
         <EditText
             android:id="@+id/txtNote"
-            android:layout_width="0dp"
-            android:layout_height="0dp"
-            android:layout_marginStart="10dp"
-            android:layout_marginTop="10dp"
-            android:layout_marginEnd="10dp"
+            android:layout_width="312dp"
+            android:layout_height="245dp"
+            android:layout_marginStart="40dp"
+            android:layout_marginTop="11dp"
             android:layout_marginBottom="10dp"
             android:gravity="center_vertical|left"
             android:text="Notes"
-            android:textAlignment="viewStart"
             android:textColor="@color/border_color"
             android:textSize="24sp"
             app:layout_constraintBottom_toTopOf="@+id/bar3"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/bar1" />
+            app:layout_constraintStart_toEndOf="@+id/seekBar"
+            app:layout_constraintTop_toTopOf="parent"
+            />
 
         <View
             android:id="@+id/bar3"
             android:layout_width="0dp"
             android:layout_height="1dp"
-            android:layout_marginStart="10dp"
             android:layout_marginTop="10dp"
-            android:layout_marginEnd="10dp"
             android:layout_marginBottom="10dp"
             android:background="@color/border_color"
             app:layout_constraintBottom_toTopOf="@+id/btnSave"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="1.0"
-            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="@+id/txtNote"
+            app:layout_constraintStart_toStartOf="@+id/txtNote"
             app:layout_constraintTop_toBottomOf="@+id/txtNote" />
 
-        <View
-            android:id="@+id/bar1"
-            android:layout_width="0dp"
-            android:layout_height="1dp"
-            android:layout_marginStart="10dp"
-            android:layout_marginTop="20dp"
-            android:layout_marginEnd="10dp"
-            android:background="@color/border_color"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.0"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/switchbox" />
-
         <TextView
-        android:id="@+id/txtCompany"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="10dp"
-        android:layout_marginTop="10dp"
-        android:layout_marginEnd="10dp"
-        android:text="Company"
-        android:textSize="40sp"
-        android:transitionName="companyTransition"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+            android:id="@+id/txtCompany"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="10dp"
+            android:layout_marginTop="10dp"
+            android:text="Company"
+            android:textSize="40sp"
+            android:transitionName="companyTransition"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
 
         <TextView
             android:id="@+id/txtCompany2"
             android:layout_width="135dp"
             android:layout_height="41dp"
-            android:layout_marginStart="80dp"
-            android:layout_marginTop="184dp"
-            android:layout_marginEnd="10dp"
-            android:text="Coolness"
+            android:layout_marginStart="10dp"
+            android:layout_marginTop="50dp"
+            android:layout_marginBottom="50dp"
+            android:text="@string/txtCool"
             android:textSize="30sp"
             android:transitionName="companyTransition"
-            app:layout_constraintEnd_toStartOf="@+id/txtScore"
-            app:layout_constraintHorizontal_bias="1.0"
+            app:layout_constraintBottom_toBottomOf="@+id/txtScore"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintTop_toTopOf="@+id/txtScore" />
 
-    <TextView
-        android:id="@+id/txtLocation"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="10dp"
-        android:layout_marginTop="10dp"
-        android:layout_marginEnd="10dp"
-        android:text="Location"
-        android:textSize="25sp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/txtCompany" />
+        <TextView
+            android:id="@+id/txtLocation"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="10dp"
+            android:layout_marginTop="10dp"
+            android:text="Location"
+            android:textSize="25sp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/txtCompany" />
 
-    <TextView
-        android:id="@+id/txtScore"
-        android:layout_width="100dp"
-        android:layout_height="100dp"
-        android:layout_marginTop="156dp"
-        android:layout_marginEnd="80dp"
-        android:background="@drawable/border"
-        android:elevation="20dp"
-        android:gravity="center"
-        android:text="6.9"
+        <TextView
+            android:id="@+id/txtScore"
+            android:layout_width="100dp"
+            android:layout_height="100dp"
+            android:layout_marginStart="10dp"
+            android:layout_marginTop="9dp"
+            android:background="@drawable/border"
 
-        android:textSize="50dp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+            android:elevation="20dp"
+            android:gravity="center"
+            android:text="6.9"
+            android:textSize="50dp"
+            app:layout_constraintStart_toEndOf="@+id/txtCompany2"
+            app:layout_constraintTop_toBottomOf="@+id/txtLocation" />
 
         <Button
             android:id="@+id/btnExit"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="30dp"
+            android:layout_marginStart="50dp"
+            android:layout_marginTop="10dp"
+            android:layout_marginBottom="10dp"
             android:elevation="40dp"
             android:text="@string/btnCancel"
             android:textSize="@dimen/btnTextSize"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toStartOf="@+id/btnSave"
-            app:layout_constraintStart_toStartOf="parent" />
+            app:layout_constraintStart_toStartOf="@+id/txtNote"
+            app:layout_constraintTop_toBottomOf="@+id/bar3" />
 
         <Button
             android:id="@+id/btnSave"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="30dp"
+            android:layout_marginEnd="50dp"
+            android:layout_marginBottom="10dp"
             android:elevation="40dp"
             android:text="@string/btnSave"
             android:textSize="@dimen/btnTextSize"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toEndOf="@+id/btnExit" />
+            app:layout_constraintEnd_toEndOf="@+id/txtNote"
+            app:layout_constraintTop_toBottomOf="@+id/bar3" />
 
         <SeekBar
-        android:id="@+id/seekBar"
-        android:layout_width="0dp"
-        android:layout_height="40dp"
-        android:layout_marginStart="40dp"
-        android:layout_marginTop="40dp"
-        android:layout_marginEnd="40dp"
-        android:progressDrawable="@drawable/seek_bar"
-        android:thumb="@drawable/seek_thumb"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/txtScore" />
+            android:id="@+id/seekBar"
+            android:layout_width="0dp"
+            android:layout_height="40dp"
+            android:layout_marginStart="10dp"
+            android:layout_marginTop="10dp"
+            android:layout_marginEnd="40dp"
+            android:progressDrawable="@drawable/seek_bar"
+            android:thumb="@drawable/seek_thumb"
+            app:layout_constraintEnd_toStartOf="@+id/txtNote"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/txtScore" />
 
         <LinearLayout
             android:id="@+id/switchbox"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="20dp"
+            android:layout_width="208dp"
+            android:layout_height="60dp"
+            android:layout_marginTop="12dp"
             android:orientation="horizontal"
             android:paddingTop="10dp"
             android:paddingBottom="10dp"
-            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintEnd_toStartOf="@+id/txtNote"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/seekBar">
 
@@ -181,15 +165,15 @@
                 android:textSize="24sp" />
 
             <Switch
-                android:paddingTop="10dp"
-                android:paddingLeft="10dp"
-                android:paddingBottom="15dp"
-                android:paddingRight="10dp"
                 android:id="@+id/SwitchApplied"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:paddingLeft="10dp"
+                android:paddingTop="10dp"
+                android:paddingRight="10dp"
+                android:paddingBottom="15dp"
                 android:scaleX="1.5"
-                android:scaleY="1.5"/>
+                android:scaleY="1.5" />
 
 
         </LinearLayout>

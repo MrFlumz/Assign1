@@ -10,5 +10,7 @@
     <string name="btnCancel">Cancel</string>
     <string name="btnSave">Save</string>
     <string name="Status">Status</string>
+    <string name="txtCool">Coolness</string>
+    <string name="txtNotes">Notes..</string>
 
 </resources>

@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Job Seachr</string>
+    <string name="Applied">Ansøgt</string>
+    <string name="AppliedNot">Ikke ansøgt</string>
+    <string name="SaveButton">Gem</string>
+    <string name="Status">Status</string>
+    <string name="btnCancel">Fortryd</string>
+    <string name="btnSave">Gem</string>
+    <string name="txtCool">Coolhed</string>
+    <string name="txtNotes">Noter..</string>
+    <string name="ColorPickButton">Vælger</string>
+    <string name="EditTextButton">Ændrer</string>
+    <string name="SliderButton">Slider</string>
+    <string name="picker_activity">Vælger</string>
+</resources>

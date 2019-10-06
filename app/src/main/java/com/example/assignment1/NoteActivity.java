@@ -43,7 +43,7 @@ public class NoteActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_note);
-        this.setTitle("Slider");
+        this.setTitle("");
 
         txtCompany = findViewById(R.id.txtCompany);
         txtLocation = findViewById(R.id.txtLocation);
@@ -52,7 +52,7 @@ public class NoteActivity extends AppCompatActivity {
         seekBar = findViewById(R.id.seekBar);
         txtApplied = findViewById(R.id.txtApplied);
         txtScore = findViewById(R.id.txtScore);
-        btnCancel = findViewById(R.id.btnSave);
+        btnCancel = findViewById(R.id.btnExit);
         btnSave = findViewById(R.id.btnSave);
         txtNote = findViewById(R.id.txtNote);
         intent = getIntent();
@@ -65,7 +65,7 @@ public class NoteActivity extends AppCompatActivity {
         txtNote.setText(intent.getStringExtra(MainActivity.JOB_NOTE));
         score = intent.getStringExtra(MainActivity.JOB_SCORE);
         txtScore.setText(score);
-        job = new Jobs("", "", "", ""); // is only used to get color conversion
+        job = new Jobs("", "", "", "",this); // is only used to get color conversion
         String color = job.setmStatusColor(Double.parseDouble(intent.getStringExtra(MainActivity.JOB_SCORE)));
         PorterDuffColorFilter colorfilter = new PorterDuffColorFilter(Color.parseColor(color), PorterDuff.Mode.MULTIPLY);
         txtScore.getBackground().setColorFilter(colorfilter);

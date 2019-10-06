@@ -1,5 +1,6 @@
 package com.example.assignment1;
 
+import android.content.Context;
 import android.os.Parcel;
 import android.os.Parcelable;
 import android.util.Log;
@@ -18,6 +19,7 @@ public class Jobs implements Parcelable {
     private String mStatusColor;
     private String mNote = "Notes..";
 
+
     Random rand = new Random();
 
 
@@ -27,11 +29,12 @@ public class Jobs implements Parcelable {
 
 
 
-    public Jobs(String mCom, String mLoc, String mTit, String mDes) {
+    public Jobs(String mCom, String mLoc, String mTit, String mDes, Context mthis) {
         mCompany = mCom;
         mLocation = mLoc;
         mTitle = mTit;
         mDescription = mDes;
+        mNote = mthis.getResources().getString(R.string.txtNotes);
         mScore = ((double)rand.nextInt(100))/10;
         Log.d("score is", Double.toString(mScore));
         setmStatusColor(mScore);
@@ -117,12 +120,12 @@ public class Jobs implements Parcelable {
         return mDescription;
     }
 
-    public static ArrayList<Jobs> parseJobList(List<String[]> list) {
+    public static ArrayList<Jobs> parseJobList(List<String[]> list, Context mthis) {
         ArrayList<Jobs> joblist = new ArrayList<Jobs>();
         int length = list.size(); // -1 because first is description
 
         for (int i = 1; i < length; i++) {
-            joblist.add(new Jobs(list.get(i)[0], list.get(i)[1], list.get(i)[2], list.get(i)[3]));
+            joblist.add(new Jobs(list.get(i)[0], list.get(i)[1], list.get(i)[2], list.get(i)[3], mthis));
         }
         return joblist;
     }

@@ -33,7 +33,7 @@ public class JobActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_job);
-        this.setTitle("Picker");
+        this.setTitle("");
         //get the current intent
         Intent intent = getIntent();
         ImageView imgLogo = findViewById(R.id.imgLogo);
@@ -50,6 +50,7 @@ public class JobActivity extends AppCompatActivity {
         txtLocation.setText(intent.getStringExtra(MainActivity.JOB_LOCATION));
         txtTitle.setText(intent.getStringExtra(MainActivity.JOB_TITLE));
         txtDescription.setText(intent.getStringExtra(MainActivity.JOB_DESCRIPTION));
+
         txtScore.setText(intent.getStringExtra(MainActivity.JOB_SCORE));
         applied = intent.getBooleanExtra(MainActivity.JOB_STATUS,false);
         setAppliedText(applied);
@@ -59,7 +60,7 @@ public class JobActivity extends AppCompatActivity {
         int resId = this.getResources().getIdentifier(nameOfImage, "drawable", this.getPackageName());
         Bitmap bitmap = BitmapFactory.decodeResource(this.getResources(), resId);
         imgLogo.setImageBitmap(bitmap);
-        job = new Jobs("","","",""); // is only used to get color conversion
+        job = new Jobs("","","","",this); // is only used to get color conversion
         String color = job.setmStatusColor(Double.parseDouble(intent.getStringExtra(MainActivity.JOB_SCORE)));
         PorterDuffColorFilter colorfilter = new PorterDuffColorFilter(Color.parseColor(color), PorterDuff.Mode.MULTIPLY);
         txtScore.getBackground().setColorFilter(colorfilter);
