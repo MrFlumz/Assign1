@@ -56,6 +56,7 @@ public class NoteActivity extends AppCompatActivity {
         btnSave = findViewById(R.id.btnSave);
         txtNote = findViewById(R.id.txtNote);
         intent = getIntent();
+
         position = intent.getIntExtra(MainActivity.JOB_INDEX, -1);
         applied = intent.getBooleanExtra(MainActivity.JOB_STATUS,false);
         Log.d("hejhej", Boolean.toString(applied));

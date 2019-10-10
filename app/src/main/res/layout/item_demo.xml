@@ -60,7 +60,7 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="10dp"
         android:layout_marginEnd="10dp"
-        android:text="TextView3"
+        android:text="@string/textnavn"
         android:textSize="24sp"
         android:transitionName="companyTransition"
         app:layout_constraintEnd_toStartOf="@+id/txtScore"
