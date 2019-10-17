@@ -1,15 +1,9 @@
 package com.example.assignment1;
 
-import androidx.annotation.Nullable;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
-
 import android.app.ActivityOptions;
 import android.app.AlertDialog;
 import android.content.Intent;
 import android.os.Bundle;
-import android.os.Parcelable;
 import android.text.InputType;
 import android.transition.Fade;
 import android.transition.Transition;
@@ -18,26 +12,31 @@ import android.util.Pair;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
-import android.widget.TextView;
 import android.widget.Toast;
 
-import java.io.InputStreamReader;
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+
+import com.android.volley.Request;
+import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.StringRequest;
+import com.android.volley.toolbox.Volley;
+import com.example.assignment1.model.JobModel;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonParser;
+
 import java.util.ArrayList;
-
-import jp.wasabeef.recyclerview.animators.SlideInUpAnimator;
-
-import com.opencsv.CSVParser;
-import com.opencsv.CSVParserBuilder;
-import com.opencsv.CSVReader;
-import com.opencsv.CSVReaderBuilder;
-
-import java.io.IOException;
-import java.util.List;
 import java.util.Locale;
 
+import jp.wasabeef.recyclerview.animators.SlideInUpAnimator;
 
 public class MainActivity extends AppCompatActivity implements JobAdapter.OnJobListener, JobAdapter.OnJobLongListener{
 
@@ -48,66 +47,37 @@ public class MainActivity extends AppCompatActivity implements JobAdapter.OnJobL
     public static final String JOB_STATUS = "JOB_STATUS";
     public static final String JOB_SCORE = "JOB_SCORE";
     public static final String JOB_IMAGE = "JOB_IMAGE";
-    public static final String JOB_POSITION = "JOB_IMAGE";
     public static final String JOB_NOTE = "JOB_NOTE";
     public static final String JOB_INDEX = "JOB_INDEX";
-    public static final String TEXTFIELD = "textfield";
-    public static final int PICKER_INPUT = 101;
     public static final int REQUEST_NOTE = 102;
     public static final int REQUEST_NOTEACTIVITY = 100;
     public static final String JOBLIST = "JOBLIST";
-    Button btnPicker;
-    Button btnEditText;
-    Button btnSlider;
-    Intent intentPicker;
-    Intent intentEditText;
-    Intent intentSlider;
-    TextView TxtMain;
     AlertDialog.Builder searchAlert;
-    private String searchText = "Search";
-    ArrayList<Jobs> joblist;
-    private Class PickerActivity;
+    ArrayList<Jobs> joblist = new ArrayList<Jobs>();
     RecyclerView rvJobs;
     JobAdapter adapter;
+    ArrayList<JobModel> jobsList = new ArrayList<JobModel>();
+    RequestQueue queue;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 
         super.onCreate(savedInstanceState);
-
+        loadData();
+        /*
         if (savedInstanceState != null){
             //Do whatever you need with the string here, like assign it to variable.
             joblist = (ArrayList<Jobs>)savedInstanceState.getSerializable(JOBLIST);
         }
-        else{
-            String next[] = {};
-            List<String[]> list = new ArrayList<String[]>();
-            CSVParser parser = new CSVParserBuilder().withSeparator(';').build();
-            try {
-                CSVReader reader = new CSVReaderBuilder(new InputStreamReader(getAssets().open("Jobs.csv"))).withCSVParser(parser).build();
-                while(true) {
-                    next = reader.readNext();
-                    if(next != null) {
-                        list.add(next);
-                    } else {
-                        break;
-                    }
-                }
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-            Log.d("JJJJ", list.get(0)[0]);
-
-            joblist = Jobs.parseJobList(list,this);
-            Log.d("THOMAS", joblist.get(0).getmCompany());
-        }
+        */
 
 
-        Log.d("THOMAS", joblist.get(0).getmCompany());
 
         setContentView(R.layout.activity_main);
         searchAlert = new AlertDialog.Builder(this);
         rvJobs = (RecyclerView) findViewById(R.id.rvDemos);
+
 
         adapter = new JobAdapter(this, joblist,this, this);
         rvJobs.setAdapter(adapter);
@@ -126,8 +96,48 @@ public class MainActivity extends AppCompatActivity implements JobAdapter.OnJobL
     }
 
 
+    private void loadData(){
+        String base = "https://jobs.github.com/positions.json";
+        sendRequest(base);
+    }
 
+    private void sendRequest(String url){
+        if(queue==null){
+            queue = Volley.newRequestQueue(this);
+        }
 
+        StringRequest stringRequest = new StringRequest(Request.Method.GET, url,
+                new Response.Listener<String>() {
+                    @Override
+                    public void onResponse(String response) {
+                        Log.d("hihih","hel2");
+                        parseJson(response);
+                    }
+                }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                Log.d("hihih", "That did not work!", error);
+            }
+        });
+
+        queue.add(stringRequest);
+    }
+
+    private void parseJson(String json){
+        Gson gson = new GsonBuilder().create();
+        JsonParser jsonParser = new JsonParser();
+        JsonArray jsonArray = (JsonArray) jsonParser.parse(json);
+        for (int i = 0; i < jsonArray.size(); i++) {
+            JobModel job =  gson.fromJson(jsonArray.get(i).toString(), JobModel.class);
+            jobsList.add(job);
+
+        }
+
+        joblist = Jobs.parseJobList(jobsList,this);
+        Log.d("hihih", joblist.get(7).getmCompany());
+        adapter.notifyDataSetChanged();
+
+    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {

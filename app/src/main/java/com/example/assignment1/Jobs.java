@@ -5,8 +5,9 @@ import android.os.Parcel;
 import android.os.Parcelable;
 import android.util.Log;
 
+import com.example.assignment1.model.JobModel;
+
 import java.util.ArrayList;
-import java.util.List;
 import java.util.Random;
 
 public class Jobs implements Parcelable {
@@ -120,12 +121,13 @@ public class Jobs implements Parcelable {
         return mDescription;
     }
 
-    public static ArrayList<Jobs> parseJobList(List<String[]> list, Context mthis) {
+    public static ArrayList<Jobs> parseJobList(ArrayList<JobModel> list, Context mthis) {
         ArrayList<Jobs> joblist = new ArrayList<Jobs>();
         int length = list.size(); // -1 because first is description
 
-        for (int i = 1; i < length; i++) {
-            joblist.add(new Jobs(list.get(i)[0], list.get(i)[1], list.get(i)[2], list.get(i)[3], mthis));
+        for (int i = 0; i < length; i++) {
+            // (String mCom, String mLoc, String mTit, String mDes,
+            joblist.add(new Jobs(list.get(i).getCompany(), list.get(i).getLocation(), list.get(i).getTitle(), list.get(i).getDescription(), mthis));
         }
         return joblist;
     }
