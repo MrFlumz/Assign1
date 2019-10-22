@@ -20,7 +20,7 @@ import android.widget.TextView;
 public class JobActivity extends AppCompatActivity {
 
     SeekBar SeekbarPicker;
-    EditText txtNote;
+    TextView txtNote;
     Button btnSave;
     Intent returnIntent;
     String returnstr;

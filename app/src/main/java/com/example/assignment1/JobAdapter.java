@@ -17,18 +17,23 @@ import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.bumptech.glide.Glide;
+import com.example.assignment1.model.JobModel;
+
 import java.util.List;
 import java.util.Locale;
 
 public class JobAdapter extends RecyclerView.Adapter<JobAdapter.ViewHolder> {
 
-    private List<Jobs> mJobs;
+    private List<Jobs> mJobs; // custom class for holding scores, notes etc.
+    private List<JobModel> mJobModel;
     private Context mContext;
     private OnJobListener mOnJobListener;
     private OnJobLongListener mOnJobLongListener;
 
-    public JobAdapter(Context context, List<Jobs> jobs,OnJobListener onJobListener, OnJobLongListener onJobLongListener) {
+    public JobAdapter(Context context, List<Jobs> jobs,List<JobModel> JobModel, OnJobListener onJobListener, OnJobLongListener onJobLongListener) {
         mJobs = jobs;
+        mJobModel = JobModel;
         mContext = context;
         this.mOnJobListener = onJobListener;
         this.mOnJobLongListener = onJobLongListener;
@@ -85,10 +90,12 @@ public class JobAdapter extends RecyclerView.Adapter<JobAdapter.ViewHolder> {
 
         // Billede i hver viewholder
         final ImageView imgLogo = viewHolder.imgLogo;
-        final String nameOfImage = "img_"+position;
-        int resId = mContext.getResources().getIdentifier(nameOfImage, "drawable", mContext.getPackageName());
-        Bitmap bitmap = BitmapFactory.decodeResource(mContext.getResources(), resId);
-        imgLogo.setImageBitmap(bitmap);
+        Glide.with(viewHolder.imgLogo.getContext())
+                .load(mJobModel.get(position).getCompanyLogo()).into(viewHolder.imgLogo);
+        //final String nameOfImage = "img_"+position;
+        //int resId = mContext.getResources().getIdentifier(nameOfImage, "drawable", mContext.getPackageName());
+        //Bitmap bitmap = BitmapFactory.decodeResource(mContext.getResources(), resId);
+        //imgLogo.setImageBitmap(bitmap);
 
 
     }

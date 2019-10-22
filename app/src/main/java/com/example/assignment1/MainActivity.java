@@ -2,6 +2,7 @@ package com.example.assignment1;
 
 import android.app.ActivityOptions;
 import android.app.AlertDialog;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.InputType;
@@ -12,6 +13,8 @@ import android.util.Pair;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.animation.AnimationUtils;
+import android.view.animation.LayoutAnimationController;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.Toast;
@@ -79,12 +82,6 @@ public class MainActivity extends AppCompatActivity implements JobAdapter.OnJobL
         rvJobs = (RecyclerView) findViewById(R.id.rvDemos);
 
 
-        adapter = new JobAdapter(this, joblist,this, this);
-        rvJobs.setAdapter(adapter);
-        rvJobs.setLayoutManager(new LinearLayoutManager(this));
-        rvJobs.setItemAnimator(new SlideInUpAnimator());
-        Decoration itemDecoration = new Decoration(this, R.dimen.item_offset);
-        rvJobs.addItemDecoration(itemDecoration);
         builderInit();
 
         Transition fade = new Fade();
@@ -92,7 +89,6 @@ public class MainActivity extends AppCompatActivity implements JobAdapter.OnJobL
         fade.excludeTarget(android.R.id.navigationBarBackground, true);
         getWindow().setExitTransition(fade);
         getWindow().setEnterTransition(fade);
-
     }
 
 
@@ -116,6 +112,8 @@ public class MainActivity extends AppCompatActivity implements JobAdapter.OnJobL
                 }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
+
+                Toast.makeText(getApplicationContext(), "Application could not load data", Toast.LENGTH_LONG).show();
                 Log.d("hihih", "That did not work!", error);
             }
         });
@@ -135,7 +133,13 @@ public class MainActivity extends AppCompatActivity implements JobAdapter.OnJobL
 
         joblist = Jobs.parseJobList(jobsList,this);
         Log.d("hihih", joblist.get(7).getmCompany());
-        adapter.notifyDataSetChanged();
+        adapter = new JobAdapter(this, joblist, jobsList,this, this);
+        rvJobs.setAdapter(adapter);
+        rvJobs.setLayoutManager(new LinearLayoutManager(this));
+        //rvJobs.setItemAnimator(new SlideInUpAnimator());
+        Decoration itemDecoration = new Decoration(this, R.dimen.item_offset);
+        rvJobs.addItemDecoration(itemDecoration);
+        runLayoutAnimation(rvJobs);
 
     }
 
@@ -249,6 +253,17 @@ public class MainActivity extends AppCompatActivity implements JobAdapter.OnJobL
         savedInstanceState.putSerializable(JOBLIST, joblist);
         //declare values before saving the state
         super.onSaveInstanceState(savedInstanceState);
+    }
+
+
+    private void runLayoutAnimation(final RecyclerView recyclerView) {
+        final Context context = recyclerView.getContext();
+        final LayoutAnimationController controller =
+                AnimationUtils.loadLayoutAnimation(context, R.anim.layout_animation);
+
+        recyclerView.setLayoutAnimation(controller);
+        recyclerView.getAdapter().notifyDataSetChanged();
+        recyclerView.scheduleLayoutAnimation();
     }
 
 }
