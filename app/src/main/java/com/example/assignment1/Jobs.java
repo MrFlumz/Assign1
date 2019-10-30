@@ -11,14 +11,21 @@ import java.util.ArrayList;
 import java.util.Random;
 
 public class Jobs implements Parcelable {
-    private String mCompany;
-    private String mLocation;
-    private String mTitle;
-    private String mDescription;
     private double mScore = 0;
     private Boolean mApplied = false;
     private String mStatusColor;
     private String mNote = "Notes..";
+    private Boolean Favorited = false;
+
+    public Boolean getFavorited() {
+        return Favorited;
+    }
+
+    public void setFavorited(Boolean favorited) {
+        Favorited = favorited;
+    }
+
+
 
 
     Random rand = new Random();
@@ -30,15 +37,10 @@ public class Jobs implements Parcelable {
 
 
 
-    public Jobs(String mCom, String mLoc, String mTit, String mDes, Context mthis) {
-        mCompany = mCom;
-        mLocation = mLoc;
-        mTitle = mTit;
-        mDescription = mDes;
+    public Jobs(Context mthis) {
         mNote = mthis.getResources().getString(R.string.txtNotes);
-        mScore = ((double)rand.nextInt(100))/10;
-        Log.d("score is", Double.toString(mScore));
-        setmStatusColor(mScore);
+        mScore = 0.0;
+        mStatusColor = "#bdbdbd";
     }
 
     public String getmStatusColor() {
@@ -89,37 +91,6 @@ public class Jobs implements Parcelable {
         setmStatusColor(mScore);
     }
 
-    public void setmCompany(String mCompany) {
-        this.mCompany = mCompany;
-    }
-
-    public String getmCompany() {
-        return mCompany;
-    }
-
-    public void setmLocation(String mLocation) {
-        this.mLocation = mLocation;
-    }
-
-    public String getmLocation() {
-        return mLocation;
-    }
-
-    public void setmTitle(String mTitle) {
-        this.mTitle = mTitle;
-    }
-
-    public String getmTitle() {
-        return mTitle;
-    }
-
-    public void setmDescription(String mDescription) {
-        this.mDescription = mDescription;
-    }
-
-    public String getmDescription() {
-        return mDescription;
-    }
 
     public static ArrayList<Jobs> parseJobList(ArrayList<JobModel> list, Context mthis) {
         ArrayList<Jobs> joblist = new ArrayList<Jobs>();
@@ -127,7 +98,7 @@ public class Jobs implements Parcelable {
 
         for (int i = 0; i < length; i++) {
             // (String mCom, String mLoc, String mTit, String mDes,
-            joblist.add(new Jobs(list.get(i).getCompany(), list.get(i).getLocation(), list.get(i).getTitle(), list.get(i).getDescription(), mthis));
+            joblist.add(new Jobs(mthis));
         }
         return joblist;
     }
@@ -142,10 +113,7 @@ public class Jobs implements Parcelable {
 
 
     protected Jobs(Parcel in) {
-        mCompany = in.readString();
-        mLocation = in.readString();
-        mTitle = in.readString();
-        mDescription = in.readString();
+
         mScore = in.readDouble();
         byte mAppliedVal = in.readByte();
         mApplied = mAppliedVal == 0x02 ? null : mAppliedVal != 0x00;
@@ -161,10 +129,6 @@ public class Jobs implements Parcelable {
 
     @Override
     public void writeToParcel(Parcel dest, int flags) {
-        dest.writeString(mCompany);
-        dest.writeString(mLocation);
-        dest.writeString(mTitle);
-        dest.writeString(mDescription);
         dest.writeDouble(mScore);
         if (mApplied == null) {
             dest.writeByte((byte) (0x02));
