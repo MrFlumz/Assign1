@@ -90,7 +90,7 @@ public class MainActivity extends AppCompatActivity implements JobAdapter.OnJobL
             @Override
             public void onClick(View v) {
                 if(bound && BoundBackgroundService!=null){
-                    BoundBackgroundService.getCurrentJobList(txtSearch.getText().toString());
+                    BoundBackgroundService.getGithubJobList(txtSearch.getText().toString());
                 }
             }
         });
@@ -119,11 +119,8 @@ public class MainActivity extends AppCompatActivity implements JobAdapter.OnJobL
         Log.d("bg", "unregistering receivers");
         LocalBroadcastManager.getInstance(this).unregisterReceiver(onBackgroundServiceResult);
 
+
     }
-
-
-
-
 
     //define our broadcast receiver for (local) broadcasts.
     // Registered and unregistered in onStart() and onStop() methods
@@ -172,8 +169,9 @@ public class MainActivity extends AppCompatActivity implements JobAdapter.OnJobL
             rvJobs.setAdapter(adapter);
             rvJobs.setLayoutManager(new LinearLayoutManager(getApplicationContext()));
             //rvJobs.setItemAnimator(new SlideInUpAnimator());
-            Decoration itemDecoration = new Decoration(getApplicationContext(), R.dimen.item_offset);
+            Decoration itemDecoration = new Decoration(getApplicationContext(),R.dimen.card_offset_R,R.dimen.card_offset_T,R.dimen.card_offset_L,R.dimen.card_offset_B);
             rvJobs.addItemDecoration(itemDecoration);
+            BoundBackgroundService.getRoomJobList();
         }
 
         @Override
@@ -207,11 +205,13 @@ public class MainActivity extends AppCompatActivity implements JobAdapter.OnJobL
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == REQUEST_NOTEACTIVITY) {
             if (resultCode == RESULT_OK) {
+
                 adapter.notifyDataSetChanged();
             }
         }
         else if(requestCode == REQUEST_NOTE){
             if (resultCode == RESULT_OK) {
+                BoundBackgroundService.addJob(BoundBackgroundService.getRawJobList().get(1));
                 adapter.notifyDataSetChanged();
             }
         }

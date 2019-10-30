@@ -83,7 +83,7 @@ public class NoteActivity extends AppCompatActivity {
             @Override
             public void onProgressChanged(SeekBar seekBar, int i, boolean b) {
                 if(bound && BoundBackgroundService!=null) {
-                    String color = job.setmStatusColor((double) i / 10);
+                    String color = job.CalcStatusColor((double) i / 10);
                     PorterDuffColorFilter colorfilter = new PorterDuffColorFilter(Color.parseColor(color), PorterDuff.Mode.MULTIPLY);
                     txtScore.getBackground().setColorFilter(colorfilter);
                     seekBar.getThumb().setColorFilter(colorfilter);
@@ -124,9 +124,10 @@ public class NoteActivity extends AppCompatActivity {
             public void onClick(View v) {
                 Intent returnIntent = new Intent();
                 if (score != null){
-                    BoundBackgroundService.getRawJobList().get(position).setmScore(Float.parseFloat(score));}
+                    BoundBackgroundService.getRawJobList().get(position).setScore(Float.parseFloat(score));}
                 BoundBackgroundService.getRawJobList().get(position).setFavorited(favorited);
                 setResult(RESULT_OK,returnIntent);
+                BoundBackgroundService.addJob(BoundBackgroundService.getRawJobList().get(position));
                 finish();
             }
         });
@@ -144,12 +145,12 @@ public class NoteActivity extends AppCompatActivity {
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 if(bound && BoundBackgroundService!=null) {
                     if (switchApplied.isChecked()) {
-                        BoundBackgroundService.getRawJobList().get(position).setmApplied(true);
+                        BoundBackgroundService.getRawJobList().get(position).setApplied(true);
                         applied = true;
                         setAppliedText(applied);
 
                     } else {
-                        BoundBackgroundService.getRawJobList().get(position).setmApplied(false);
+                        BoundBackgroundService.getRawJobList().get(position).setApplied(false);
                         applied = false;
                         setAppliedText(applied);
                     }
@@ -169,18 +170,18 @@ public class NoteActivity extends AppCompatActivity {
             txtLocation.setText(BoundBackgroundService.getRawJobList().get(position).getLocation());
 
 
-            txtScore.setText(String.format(Locale.US,"%.1f",BoundBackgroundService.getRawJobList().get(position).getmScore()));
-            applied = BoundBackgroundService.getRawJobList().get(position).getmApplied();
+            txtScore.setText(String.format(Locale.US,"%.1f",BoundBackgroundService.getRawJobList().get(position).getScore()));
+            applied = BoundBackgroundService.getRawJobList().get(position).getApplied();
             setAppliedText(applied);
-            txtNote.setText(BoundBackgroundService.getRawJobList().get(position).getmNote());
+            txtNote.setText(BoundBackgroundService.getRawJobList().get(position).getNote());
 
-            PorterDuffColorFilter colorfilter = new PorterDuffColorFilter(Color.parseColor(BoundBackgroundService.getRawJobList().get(position).getmStatusColor()), PorterDuff.Mode.MULTIPLY);
+            PorterDuffColorFilter colorfilter = new PorterDuffColorFilter(Color.parseColor(BoundBackgroundService.getRawJobList().get(position).getStatusColor()), PorterDuff.Mode.MULTIPLY);
             txtScore.getBackground().setColorFilter(colorfilter);
 
             switchApplied.setChecked(applied);
 
             seekBar.setMax(100);
-            seekBar.setProgress((int) (BoundBackgroundService.getRawJobList().get(position).getmScore() * 10));
+            seekBar.setProgress((int) (BoundBackgroundService.getRawJobList().get(position).getScore() * 10));
             seekBar.getThumb().setColorFilter(colorfilter);
             seekBar.getProgressDrawable().setColorFilter(colorfilter);
 
@@ -190,7 +191,7 @@ public class NoteActivity extends AppCompatActivity {
 
         @Override
         public void onServiceDisconnected(ComponentName name) {
-
+            BoundBackgroundService = null;
         }
     };
 

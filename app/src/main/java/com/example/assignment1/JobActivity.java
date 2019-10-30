@@ -117,14 +117,14 @@ public class JobActivity extends AppCompatActivity {
                 txtDescription.setText(Html.fromHtml(BoundBackgroundService.getRawJobList().get(position).getDescription()));
             }
 
-            txtScore.setText(String.format(Locale.US,"%.1f",BoundBackgroundService.getRawJobList().get(position).getmScore()));
-            applied = BoundBackgroundService.getRawJobList().get(position).getmApplied();
+            txtScore.setText(String.format(Locale.US,"%.1f",BoundBackgroundService.getRawJobList().get(position).getScore()));
+            applied = BoundBackgroundService.getRawJobList().get(position).getApplied();
             setAppliedText(applied);
-            txtNote.setText(BoundBackgroundService.getRawJobList().get(position).getmNote());
+            txtNote.setText(BoundBackgroundService.getRawJobList().get(position).getNote());
             Glide.with(getApplicationContext())
                     .load(BoundBackgroundService.getRawJobList().get(position).getCompanyLogo()).into(imgLogo);
 
-            PorterDuffColorFilter colorfilter = new PorterDuffColorFilter(Color.parseColor(BoundBackgroundService.getRawJobList().get(position).getmStatusColor()), PorterDuff.Mode.MULTIPLY);
+            PorterDuffColorFilter colorfilter = new PorterDuffColorFilter(Color.parseColor(BoundBackgroundService.getRawJobList().get(position).getStatusColor()), PorterDuff.Mode.MULTIPLY);
             txtScore.getBackground().setColorFilter(colorfilter);
         }
 

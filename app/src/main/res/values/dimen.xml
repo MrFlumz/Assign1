@@ -2,5 +2,8 @@
 <resources>
     <dimen name="seek_bar_thickness">4dp</dimen>
     <dimen name="seek_bar_thumb_size">20dp</dimen>
-    <dimen name="item_offset">5dp</dimen>
+    <dimen name="card_offset_L">8dp</dimen>
+    <dimen name="card_offset_T">11dp</dimen>
+    <dimen name="card_offset_R">8dp</dimen>
+    <dimen name="card_offset_B">0dp</dimen>
 </resources>

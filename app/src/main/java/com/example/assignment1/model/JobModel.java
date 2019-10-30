@@ -3,42 +3,70 @@ package com.example.assignment1.model;
 
 import android.util.Log;
 
+import androidx.annotation.NonNull;
+import androidx.room.ColumnInfo;
+import androidx.room.Entity;
+import androidx.room.PrimaryKey;
+
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
+@Entity
 public class JobModel {
 
     /* AUTO GENERATED CODE */
+    @PrimaryKey
     @SerializedName("id")
     @Expose
+    @NonNull
     private String id;
+
+    @ColumnInfo(name = "type")
     @SerializedName("type")
     @Expose
     private String type;
+
+    @ColumnInfo(name = "url")
     @SerializedName("url")
     @Expose
     private String url;
+
+    @ColumnInfo(name = "created_at")
     @SerializedName("created_at")
     @Expose
     private String createdAt;
+
+    @ColumnInfo(name = "Company")
     @SerializedName("company")
     @Expose
     private String company;
+
+    @ColumnInfo(name = "Company_url")
     @SerializedName("company_url")
     @Expose
     private String companyUrl;
+
+    @ColumnInfo(name = "Location")
     @SerializedName("location")
     @Expose
     private String location;
+
+    @ColumnInfo(name = "Title")
     @SerializedName("title")
     @Expose
     private String title;
+
+    @ColumnInfo(name = "Discription")
     @SerializedName("description")
     @Expose
     private String description;
+
+    @ColumnInfo(name = "howToApply")
     @SerializedName("how_to_apply")
     @Expose
     private String howToApply;
+
+    @ColumnInfo(name = "Company_Logo_Url")
     @SerializedName("company_logo")
     @Expose
     private String companyLogo;
@@ -132,11 +160,25 @@ public class JobModel {
     }
 
     /* CUSTOM CODE*/
-    private double mScore = 0;
-    private Boolean mApplied = false;
-    private String mStatusColor = "#bdbdbd";
-    private String mNote = "Notes..";
+    @ColumnInfo(name = "Score")
+    private double Score = 0;
+    @ColumnInfo(name = "Applied")
+    private Boolean Applied = false;
+    @ColumnInfo(name = "Status_Color")
+    private String StatusColor = "#bdbdbd";
+    @ColumnInfo(name = "Note")
+    private String Note = "Notes..";
+    @ColumnInfo(name = "Favorited")
     private Boolean Favorited = false;
+
+
+    public String getStatusColor() {
+        return StatusColor;
+    }
+
+    public void setStatusColor(String statusColor) {
+        StatusColor = statusColor;
+    }
 
     public Boolean getFavorited() {
         return Favorited;
@@ -145,29 +187,24 @@ public class JobModel {
     public void setFavorited(Boolean favorited) {
         Favorited = favorited;
     }
-    public double getmScore() {
-        return mScore;
+    public double getScore() {
+        return Score;
     }
 
-    public void setmScore(double mScore) {
-        this.mScore = mScore;
-        this.mStatusColor = setmStatusColor(mScore);
+    public void setScore(double mScore) {
+        this.Score = mScore;
+        this.StatusColor = CalcStatusColor(mScore);
     }
 
-    public Boolean getmApplied() {
-        return mApplied;
-    }
+    public Boolean getApplied() { return Applied; }
 
-    public void setmApplied(Boolean mApplied) {
-        this.mApplied = mApplied;
-    }
+    public void setApplied(Boolean mApplied) { this.Applied = mApplied; }
 
 
-    public String getmStatusColor() {
-        return mStatusColor;
-    }
 
-    public String setmStatusColor(double score) {
+
+
+    public String CalcStatusColor(double score) {
 
 
 
@@ -189,16 +226,17 @@ public class JobModel {
 
         // turns down red from 255 to 0 as score goes from 5 to 10
         Log.d("heee", String.format("%f",score)+"   "+String.format("%02X", r)+"  "+String.format("%02X", g)+"  "+String.format("%02X", b));
-        mStatusColor = "#" + String.format("%02X", r)+String.format("%02X", g)+String.format("%02X", b);
+        StatusColor = "#" + String.format("%02X", r)+String.format("%02X", g)+String.format("%02X", b);
 
-        return mStatusColor;
-    }
-    public String getmNote() {
-        return mNote;
+        return StatusColor;
     }
 
-    public void setmNote(String mNote) {
-        this.mNote = mNote;
+    public String getNote() {
+        return Note;
+    }
+
+    public void setNote(String mNote) {
+        this.Note = mNote;
     }
 
 }

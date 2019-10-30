@@ -68,15 +68,15 @@ public class JobAdapter extends RecyclerView.Adapter<JobAdapter.ViewHolder> {
 
 
         // if score is 10, remove decimal as it cant fit
-        if (mJobModel.get(position).getmScore()<9.9){
-            viewHolder.txtScore.setText(String.format(Locale.US,"%.1f", mJobModel.get(position).getmScore()));}
+        if (mJobModel.get(position).getScore()<9.9){
+            viewHolder.txtScore.setText(String.format(Locale.US,"%.1f", mJobModel.get(position).getScore()));}
         else {
-            viewHolder.txtScore.setText(String.format(Locale.US,"%.0f", mJobModel.get(position).getmScore()));}
+            viewHolder.txtScore.setText(String.format(Locale.US,"%.0f", mJobModel.get(position).getScore()));}
 
 
         // Applied ændrer farve efter om der er søgt eller ej
 
-        if (mJobModel.get(position).getmApplied()){
+        if (mJobModel.get(position).getApplied()){
             viewHolder.txtStatus.setText("APPLIED");
             viewHolder.txtStatus.setTextColor(ContextCompat.getColor(mContext , R.color.applied));// should be resource
         }
@@ -84,8 +84,8 @@ public class JobAdapter extends RecyclerView.Adapter<JobAdapter.ViewHolder> {
             viewHolder.txtStatus.setText("NOT APP");
             viewHolder.txtStatus.setTextColor(ContextCompat.getColor(mContext , R.color.not_applied));
         }
-        Log.d("heeeej", mJobModel.get(position).getmStatusColor());
-        PorterDuffColorFilter colorfilter = new PorterDuffColorFilter(Color.parseColor(mJobModel.get(position).getmStatusColor()), PorterDuff.Mode.MULTIPLY);
+        Log.d("heeeej", mJobModel.get(position).getStatusColor());
+        PorterDuffColorFilter colorfilter = new PorterDuffColorFilter(Color.parseColor(mJobModel.get(position).getStatusColor()), PorterDuff.Mode.MULTIPLY);
         viewHolder.txtScore.getBackground().setColorFilter(colorfilter);
 
 

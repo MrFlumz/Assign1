@@ -28,8 +28,10 @@ import com.google.gson.GsonBuilder;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonParser;
 
+import com.facebook.stetho.Stetho;
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
+import java.util.List;
 
 public class BackgroundService extends Service {
 
@@ -42,8 +44,8 @@ public class BackgroundService extends Service {
     //The IBinder instance to return
 
     private boolean started = false;
-    private long wait;
-    public ArrayList<JobModel> RawJobList = new ArrayList<JobModel>();
+    private long wait = 1000L;
+    public List<JobModel> RawJobList = new ArrayList<>();
     RequestQueue queue;
 
     private static final long DEFAULT_WAIT = 30*1000; //default = 30s
@@ -72,7 +74,7 @@ public class BackgroundService extends Service {
     }
 
     //simple method for returning current count
-    public ArrayList<JobModel> getRawJobList(){
+    public List<JobModel> getRawJobList(){
         return RawJobList;
     }
 
@@ -91,6 +93,8 @@ public class BackgroundService extends Service {
     public int onStartCommand(Intent intent, int flags, int startId) {
         //in this case we only start the background running loop once
         if(!started && intent!=null) {
+            //for debugging/viewing database
+            enableStethos();
             wait = intent.getLongExtra(EXTRA_TASK_TIME_MS, DEFAULT_WAIT);
             Log.d(LOG, "Background service onStartCommand with wait: " + wait + "ms");
             started = true;
@@ -121,7 +125,7 @@ public class BackgroundService extends Service {
             }
 
             //do background thing
-            doBackgroundThing(wait);
+            doBackgroundSave(wait);
         } else {
             Log.d(LOG, "Background service onStartCommand - already started!");
         }
@@ -132,12 +136,12 @@ public class BackgroundService extends Service {
 
 
     //using recursion for running this as a loop
-    private void doBackgroundThing(Long waitTimeInMilis){
+    public void doBackgroundSave(long time){
 
         //create asynch tasks that sleeps X ms and then sends broadcast
 
         BackgroundThingTask task = new BackgroundThingTask(this);
-        task.execute("hej"); //L means long number format
+        task.execute(time); //L means long number format
 
     }
 
@@ -158,12 +162,12 @@ public class BackgroundService extends Service {
     }
 
     //lets make an asynch task to use just in this activity...
-    private static class BackgroundThingTask extends AsyncTask<String, String, String> {
+    private static class BackgroundThingTask extends AsyncTask<Long, String, String> {
 
         //WeakReference is Java's way of indicating that the referenced object can be garbage collected if needed
         //we need this to avoid holding onto the service if the asynch task goes on (causing memory leak)
         private WeakReference<BackgroundService> serviceRef;
-
+        private long waitTimeInMilis;
         // only retain a weak reference to the activityReference
         BackgroundThingTask(BackgroundService service) {
             serviceRef = new WeakReference<>(service);
@@ -175,9 +179,10 @@ public class BackgroundService extends Service {
         }
 
         @Override
-        protected String doInBackground(String... url) {
-            //sendRequest(url.toString());
-            return "hej";
+        protected String doInBackground(Long... time) {
+
+
+            return "saved";
         }
 
         @Override
@@ -190,19 +195,30 @@ public class BackgroundService extends Service {
 
                 //if Service is still running, keep doing this recursively
                 //if(service.started){
-                    //service.doBackgroundThing(waitTimeInMilis);
+                    //service.doBackgroundSave(waitTimeInMilis);
                 //}
             }
         }
     }
 
-    void getCurrentJobList(String filter){
+    void getGithubJobList(String filter){
         if (filter == "") {
             sendRequest("https://jobs.github.com/positions.json");
         }
         else {
             String url = "https://jobs.github.com/positions.json?description=" + filter;
             sendRequest(url);
+        }
+    }
+
+    void getRoomJobList(){
+        try {
+            List<JobModel> temp = loadTasks();
+            if (temp != null){
+                RawJobList = temp;
+                broadcastTaskResult(JOBLIST_UPDATED);}
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
 
@@ -240,5 +256,40 @@ public class BackgroundService extends Service {
             RawJobList.add(job);
         }
         broadcastTaskResult(JOBLIST_UPDATED);
+    }
+
+
+    public void addJob(JobModel t){
+        t = RawJobList.get(1);
+        Log.d("logig",t.toString());
+        try {
+            ((JobApplication)getApplicationContext()).getJobDatabase().JobDao().insertAll(t);
+        } catch (Exception e) {
+            Log.e("MYAPP", "exception", e);
+        }
+    }
+    public void deleteTask(JobModel t){
+        ((JobApplication)getApplicationContext()).getJobDatabase().JobDao().delete(t);;
+    }
+
+    public List<JobModel> loadTasks(){
+        return ((JobApplication)getApplicationContext()).getJobDatabase().JobDao().getAll();
+    }
+    private void enableStethos(){
+
+           /* Stetho initialization - allows for debugging features in Chrome browser
+           See http://facebook.github.io/stetho/ for details
+           1) Open chrome://inspect/ in a Chrome browse
+           2) select 'inspect' on your app under the specific device/emulator
+           3) select resources tab
+           4) browse database tables under Web SQL
+         */
+        Stetho.initialize(Stetho.newInitializerBuilder(this)
+                .enableDumpapp(
+                        Stetho.defaultDumperPluginsProvider(this))
+                .enableWebKitInspector(
+                        Stetho.defaultInspectorModulesProvider(this))
+                .build());
+        /* end Stethos */
     }
 }

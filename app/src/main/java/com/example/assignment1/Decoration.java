@@ -10,19 +10,28 @@ import androidx.recyclerview.widget.RecyclerView;
 
 public class Decoration extends RecyclerView.ItemDecoration {
 
-    private int mItemOffset;
+    private int mItemOffset_L;
+    private int mItemOffset_R;
+    private int mItemOffset_T;
+    private int mItemOffset_B;
 
-    public Decoration(int itemOffset) {
+    public Decoration(int itemOffset_r,int itemOffset_t,int itemOffset_l,int itemOffset_b) {
 
-        mItemOffset = itemOffset;
+        mItemOffset_R = itemOffset_r;
+        mItemOffset_T = itemOffset_t;
+        mItemOffset_L = itemOffset_l;
+        mItemOffset_B = itemOffset_b;
 
     }
 
 
 
-    public Decoration(@NonNull Context context, @DimenRes int itemOffsetId) {
+    public Decoration(@NonNull Context context, @DimenRes int itemOffset_r,@DimenRes int itemOffset_t,@DimenRes int itemOffset_l,@DimenRes int itemOffset_b) {
 
-        this(context.getResources().getDimensionPixelSize(itemOffsetId));
+        this(   context.getResources().getDimensionPixelSize(itemOffset_r),
+                context.getResources().getDimensionPixelSize(itemOffset_t),
+                context.getResources().getDimensionPixelSize(itemOffset_l),
+                context.getResources().getDimensionPixelSize(itemOffset_b));
 
     }
 
@@ -34,7 +43,8 @@ public class Decoration extends RecyclerView.ItemDecoration {
 
         super.getItemOffsets(outRect, view, parent, state);
 
-        outRect.set(mItemOffset, mItemOffset, mItemOffset, mItemOffset);
+        // set offset between cards. LEFT, TOP, RIGHT, BOTTOM
+        outRect.set(mItemOffset_R, mItemOffset_T, mItemOffset_L, mItemOffset_B);
 
     }
 
