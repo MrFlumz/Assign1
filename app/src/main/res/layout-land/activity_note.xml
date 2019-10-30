@@ -8,14 +8,14 @@
     android:label="@string/picker_activity"
     android:clipToPadding="false"
     android:background="@color/background_color"
-    android:layoutAnimation="@anim/layout_animation"
+    android:layoutAnimation="@anim/layout_fadein"
 
     >
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:background="@drawable/card"
-        android:layoutAnimation="@anim/layout_animation"
+        android:layoutAnimation="@anim/layout_fadein"
         android:layout_marginStart="10dp"
         android:layout_marginTop="10dp"
         android:layout_marginEnd="10dp"

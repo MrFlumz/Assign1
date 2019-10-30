@@ -15,6 +15,6 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            android:layoutAnimation="@anim/layout_animation"
+            android:layoutAnimation="@anim/layout_fadein"
             />
 </androidx.constraintlayout.widget.ConstraintLayout>

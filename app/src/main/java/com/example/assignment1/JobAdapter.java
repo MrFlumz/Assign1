@@ -1,8 +1,6 @@
 package com.example.assignment1;
 
 import android.content.Context;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.graphics.PorterDuff;
 import android.graphics.PorterDuffColorFilter;
@@ -12,6 +10,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.content.ContextCompat;
@@ -25,19 +24,21 @@ import java.util.Locale;
 
 public class JobAdapter extends RecyclerView.Adapter<JobAdapter.ViewHolder> {
 
-    private List<Jobs> mJobs; // custom class for holding scores, notes etc.
     private List<JobModel> mJobModel;
     private Context mContext;
     private OnJobListener mOnJobListener;
     private OnJobLongListener mOnJobLongListener;
+    private boolean favorited;
+    private ViewHolder viewHolderTemp;
 
-    public JobAdapter(Context context, List<Jobs> jobs,List<JobModel> JobModel, OnJobListener onJobListener, OnJobLongListener onJobLongListener) {
-        mJobs = jobs;
+    public JobAdapter(Context context, List<JobModel> JobModel, OnJobListener onJobListener, OnJobLongListener onJobLongListener) {
         mJobModel = JobModel;
         mContext = context;
         this.mOnJobListener = onJobListener;
         this.mOnJobLongListener = onJobLongListener;
+
     }
+
 
 
     // Usually involves inflating a layout from XML and returning the holder
@@ -59,23 +60,23 @@ public class JobAdapter extends RecyclerView.Adapter<JobAdapter.ViewHolder> {
     @Override
     public void onBindViewHolder(ViewHolder viewHolder, final int position) {
         // Get the data model based on position
-        final Jobs jobs = mJobs.get(position);
-
+        final JobModel jobs = mJobModel.get(position);
+        viewHolderTemp = viewHolder;
         // Sætter tækst i hver viewholder
-        viewHolder.txtCompany.setText(jobs.getmCompany());
-        viewHolder.txtTitle.setText(jobs.getmTitle());
+        viewHolder.txtCompany.setText(jobs.getCompany());
+        viewHolder.txtTitle.setText(jobs.getTitle());
 
 
         // if score is 10, remove decimal as it cant fit
-        if (mJobs.get(position).getmScore()<9.9){
-            viewHolder.txtScore.setText(String.format(Locale.US,"%.1f", mJobs.get(position).getmScore()));}
+        if (mJobModel.get(position).getmScore()<9.9){
+            viewHolder.txtScore.setText(String.format(Locale.US,"%.1f", mJobModel.get(position).getmScore()));}
         else {
-            viewHolder.txtScore.setText(String.format(Locale.US,"%.0f", mJobs.get(position).getmScore()));}
+            viewHolder.txtScore.setText(String.format(Locale.US,"%.0f", mJobModel.get(position).getmScore()));}
 
 
         // Applied ændrer farve efter om der er søgt eller ej
 
-        if (mJobs.get(position).getmApplied()){
+        if (mJobModel.get(position).getmApplied()){
             viewHolder.txtStatus.setText("APPLIED");
             viewHolder.txtStatus.setTextColor(ContextCompat.getColor(mContext , R.color.applied));// should be resource
         }
@@ -83,8 +84,8 @@ public class JobAdapter extends RecyclerView.Adapter<JobAdapter.ViewHolder> {
             viewHolder.txtStatus.setText("NOT APP");
             viewHolder.txtStatus.setTextColor(ContextCompat.getColor(mContext , R.color.not_applied));
         }
-        Log.d("heeeej", mJobs.get(position).getmStatusColor());
-        PorterDuffColorFilter colorfilter = new PorterDuffColorFilter(Color.parseColor(mJobs.get(position).getmStatusColor()), PorterDuff.Mode.MULTIPLY);
+        Log.d("heeeej", mJobModel.get(position).getmStatusColor());
+        PorterDuffColorFilter colorfilter = new PorterDuffColorFilter(Color.parseColor(mJobModel.get(position).getmStatusColor()), PorterDuff.Mode.MULTIPLY);
         viewHolder.txtScore.getBackground().setColorFilter(colorfilter);
 
 
@@ -97,13 +98,17 @@ public class JobAdapter extends RecyclerView.Adapter<JobAdapter.ViewHolder> {
         //Bitmap bitmap = BitmapFactory.decodeResource(mContext.getResources(), resId);
         //imgLogo.setImageBitmap(bitmap);
 
+        favorited = mJobModel.get(position).getFavorited();
+        setFavorite(viewHolder, favorited); // sets star in recyclerview according to fav status
+
+
 
     }
 
     // Returns the total count of items in the list
     @Override
     public int getItemCount() {
-        return mJobs.size();
+        return mJobModel.size();
     }
 
     // Provide a direct reference to each of the views within a data item
@@ -117,6 +122,7 @@ public class JobAdapter extends RecyclerView.Adapter<JobAdapter.ViewHolder> {
         public TextView txtScore;
         public ConstraintLayout layout;
         public ImageView imgLogo;
+        public ImageView imgFavorite;
         OnJobListener onJobListener;
         OnJobLongListener onJobLongListener;
         // We also create a constructor that accepts the entire item row
@@ -135,6 +141,24 @@ public class JobAdapter extends RecyclerView.Adapter<JobAdapter.ViewHolder> {
             txtScore =      itemView.findViewById(R.id.txtScore);
             layout =        itemView.findViewById(R.id.LayoutJobEntry);
             imgLogo =       itemView.findViewById(R.id.imgLogo);
+            imgFavorite =   itemView.findViewById(R.id.imgFavorite);
+
+            imgFavorite.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    favorited = favorited ? false : true;
+
+                    if (favorited){
+                        mJobModel.get(getAdapterPosition()).setFavorited(favorited);
+                        imgFavorite.setImageResource(R.drawable.ic_star_24dp);
+                    }
+                    else{
+                        mJobModel.get(getAdapterPosition()).setFavorited(favorited);
+                        imgFavorite.setImageResource(R.drawable.ic_star_border_24dp);
+                    }
+                    Toast.makeText(mContext, "Application closed", Toast.LENGTH_SHORT).show();
+                }
+            });
         }
 
         @Override
@@ -153,6 +177,15 @@ public class JobAdapter extends RecyclerView.Adapter<JobAdapter.ViewHolder> {
 
     public interface OnJobLongListener{
         boolean onJobLongClick(int position);
+    }
+
+    void setFavorite(ViewHolder viewHolder, boolean fav){
+            if (fav){
+                viewHolder.imgFavorite.setImageResource(R.drawable.ic_star_24dp);
+            }
+            else{
+                viewHolder.imgFavorite.setImageResource(R.drawable.ic_star_border_24dp);
+            }
     }
 
 

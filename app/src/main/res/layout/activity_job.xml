@@ -9,7 +9,7 @@
     android:clipToPadding="false"
     android:background="@color/background_color"
 
-    android:layoutAnimation="@anim/layout_slideup"
+    android:layoutAnimation="@anim/layout_fadein"
 
     >
     <androidx.constraintlayout.widget.ConstraintLayout

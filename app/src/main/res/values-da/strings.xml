@@ -13,4 +13,6 @@
     <string name="EditTextButton">Ændrer</string>
     <string name="SliderButton">Slider</string>
     <string name="picker_activity">Vælger</string>
+
+    <string name="service1">A started service that runs in the background</string>
 </resources>

@@ -2,9 +2,14 @@ package com.example.assignment1;
 
 import android.app.ActivityOptions;
 import android.app.AlertDialog;
+import android.content.BroadcastReceiver;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
+import android.content.ServiceConnection;
 import android.os.Bundle;
+import android.os.IBinder;
 import android.text.InputType;
 import android.transition.Fade;
 import android.transition.Transition;
@@ -15,31 +20,16 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.animation.AnimationUtils;
 import android.view.animation.LayoutAnimationController;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.Toast;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-
-import com.android.volley.Request;
-import com.android.volley.RequestQueue;
-import com.android.volley.Response;
-import com.android.volley.VolleyError;
-import com.android.volley.toolbox.StringRequest;
-import com.android.volley.toolbox.Volley;
-import com.example.assignment1.model.JobModel;
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.google.gson.JsonArray;
-import com.google.gson.JsonParser;
-
-import java.util.ArrayList;
-import java.util.Locale;
-
-import jp.wasabeef.recyclerview.animators.SlideInUpAnimator;
 
 public class MainActivity extends AppCompatActivity implements JobAdapter.OnJobListener, JobAdapter.OnJobLongListener{
 
@@ -55,25 +45,28 @@ public class MainActivity extends AppCompatActivity implements JobAdapter.OnJobL
     public static final int REQUEST_NOTE = 102;
     public static final int REQUEST_NOTEACTIVITY = 100;
     public static final String JOBLIST = "JOBLIST";
+    public static final String BG = "BG Service";
+    private BackgroundService BoundBackgroundService;
+    private ServiceConnection ServiceConnection;
+    private boolean bound = false;
     AlertDialog.Builder searchAlert;
-    ArrayList<Jobs> joblist = new ArrayList<Jobs>();
     RecyclerView rvJobs;
     JobAdapter adapter;
-    ArrayList<JobModel> jobsList = new ArrayList<JobModel>();
-    RequestQueue queue;
-
+    EditText txtSearch;
+    Button btnSearch;
+    //for background service
+    private long task_time = 4*1000; //4 ms
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-
+        startBackgroundService(task_time);
         super.onCreate(savedInstanceState);
-        loadData();
-        /*
-        if (savedInstanceState != null){
-            //Do whatever you need with the string here, like assign it to variable.
-            joblist = (ArrayList<Jobs>)savedInstanceState.getSerializable(JOBLIST);
-        }
-        */
+        // Bind to LocalService
+        Intent intent = new Intent(this, BackgroundService.class);
+        bindService(intent, connection, Context.BIND_AUTO_CREATE);
+
+
+
 
 
 
@@ -89,59 +82,106 @@ public class MainActivity extends AppCompatActivity implements JobAdapter.OnJobL
         fade.excludeTarget(android.R.id.navigationBarBackground, true);
         getWindow().setExitTransition(fade);
         getWindow().setEnterTransition(fade);
-    }
 
-
-    private void loadData(){
-        String base = "https://jobs.github.com/positions.json";
-        sendRequest(base);
-    }
-
-    private void sendRequest(String url){
-        if(queue==null){
-            queue = Volley.newRequestQueue(this);
-        }
-
-        StringRequest stringRequest = new StringRequest(Request.Method.GET, url,
-                new Response.Listener<String>() {
-                    @Override
-                    public void onResponse(String response) {
-                        Log.d("hihih","hel2");
-                        parseJson(response);
-                    }
-                }, new Response.ErrorListener() {
+        txtSearch = findViewById(R.id.txtSearch);
+        btnSearch = findViewById(R.id.btnSearch);
+        //bindToBackgroundService();
+        btnSearch.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onErrorResponse(VolleyError error) {
-
-                Toast.makeText(getApplicationContext(), "Application could not load data", Toast.LENGTH_LONG).show();
-                Log.d("hihih", "That did not work!", error);
+            public void onClick(View v) {
+                if(bound && BoundBackgroundService!=null){
+                    BoundBackgroundService.getCurrentJobList(txtSearch.getText().toString());
+                }
             }
         });
 
-        queue.add(stringRequest);
+
+
+    }
+    @Override
+    protected void onStart() {
+        super.onStart();
+        Log.d("bg", "registering receivers");
+
+        IntentFilter filter = new IntentFilter();
+        filter.addAction(BackgroundService.BROADCAST_BACKGROUND_SERVICE_RESULT);
+
+        //can use registerReceiver(...)
+        //but using local broadcasts for this service:
+        LocalBroadcastManager.getInstance(this).registerReceiver(onBackgroundServiceResult, filter);
+
+
     }
 
-    private void parseJson(String json){
-        Gson gson = new GsonBuilder().create();
-        JsonParser jsonParser = new JsonParser();
-        JsonArray jsonArray = (JsonArray) jsonParser.parse(json);
-        for (int i = 0; i < jsonArray.size(); i++) {
-            JobModel job =  gson.fromJson(jsonArray.get(i).toString(), JobModel.class);
-            jobsList.add(job);
+    @Override
+    protected void onStop() {
+        super.onStop();
+        Log.d("bg", "unregistering receivers");
+        LocalBroadcastManager.getInstance(this).unregisterReceiver(onBackgroundServiceResult);
+
+    }
+
+
+
+
+
+    //define our broadcast receiver for (local) broadcasts.
+    // Registered and unregistered in onStart() and onStop() methods
+    private BroadcastReceiver onBackgroundServiceResult = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            Log.d(BG, "Broadcast reveiced from bg service");
+            String result = intent.getStringExtra(BackgroundService.EXTRA_TASK_RESULT);
+            if(result==null){
+                //result = getString(R.string.err_bg_service_result);
+                result = "Error";
+            }
+            if (result==BackgroundService.JOBLIST_UPDATED){
+                handleBackgroundResult(result);
+            }
 
         }
+    };
 
-        joblist = Jobs.parseJobList(jobsList,this);
-        Log.d("hihih", joblist.get(7).getmCompany());
-        adapter = new JobAdapter(this, joblist, jobsList,this, this);
-        rvJobs.setAdapter(adapter);
-        rvJobs.setLayoutManager(new LinearLayoutManager(this));
-        //rvJobs.setItemAnimator(new SlideInUpAnimator());
-        Decoration itemDecoration = new Decoration(this, R.dimen.item_offset);
-        rvJobs.addItemDecoration(itemDecoration);
-        runLayoutAnimation(rvJobs);
+    private void handleBackgroundResult(String result){
+        Toast.makeText(this, "Application closed", Toast.LENGTH_SHORT).show();
 
+            adapter.notifyDataSetChanged();
+
+        //runLayoutAnimation(rvJobs);
     }
+
+    //starts background service, taskTime indicates desired sleep period in ms for broadcasts
+    private void startBackgroundService(long taskTime){
+        Intent backgroundServiceIntent = new Intent(MainActivity.this, BackgroundService.class);
+        backgroundServiceIntent.putExtra(BackgroundService.EXTRA_TASK_TIME_MS, taskTime);
+        startService(backgroundServiceIntent);
+    }
+
+
+
+
+    private ServiceConnection connection = new ServiceConnection() {
+        @Override
+        public void onServiceConnected(ComponentName name, IBinder service) {
+            BackgroundService.BackgroundServiceBinder binder = (BackgroundService.BackgroundServiceBinder) service;
+            BoundBackgroundService = binder.getService();
+            bound = true;
+
+            adapter = new JobAdapter(getApplicationContext(), BoundBackgroundService.getRawJobList(),MainActivity.this, MainActivity.this);
+            rvJobs.setAdapter(adapter);
+            rvJobs.setLayoutManager(new LinearLayoutManager(getApplicationContext()));
+            //rvJobs.setItemAnimator(new SlideInUpAnimator());
+            Decoration itemDecoration = new Decoration(getApplicationContext(), R.dimen.item_offset);
+            rvJobs.addItemDecoration(itemDecoration);
+        }
+
+        @Override
+        public void onServiceDisconnected(ComponentName name) {
+
+        }
+    };
+
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -167,18 +207,12 @@ public class MainActivity extends AppCompatActivity implements JobAdapter.OnJobL
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == REQUEST_NOTEACTIVITY) {
             if (resultCode == RESULT_OK) {
-                int pos = data.getIntExtra(JOB_INDEX, -1);
-                joblist.get(pos).setmScore((float)Double.parseDouble(data.getStringExtra(JOB_SCORE)));
-                Log.d( "hejsa", data.getStringExtra(JOB_NOTE));
-                joblist.get(pos).setmNote(data.getStringExtra(JOB_NOTE));
-                joblist.get(pos).setmApplied(data.getBooleanExtra(JOB_STATUS,false));
                 adapter.notifyDataSetChanged();
             }
         }
         else if(requestCode == REQUEST_NOTE){
             if (resultCode == RESULT_OK) {
-                int pos = data.getIntExtra(JOB_INDEX, -1);
-                joblist.get(pos).setmNote(data.getStringExtra(JOB_NOTE));
+                adapter.notifyDataSetChanged();
             }
         }
 
@@ -205,42 +239,18 @@ public class MainActivity extends AppCompatActivity implements JobAdapter.OnJobL
 
         Toast.makeText(MainActivity.this, "Clicked on pos "+position, Toast.LENGTH_SHORT).show();
         Intent intent = new Intent(this, JobActivity.class);
-        intent.putExtra(JOB_COMPANY, joblist.get(position).getmCompany());
-        intent.putExtra(JOB_LOCATION, joblist.get(position).getmLocation());
-        intent.putExtra(JOB_TITLE, joblist.get(position).getmTitle());
-        intent.putExtra(JOB_DESCRIPTION, joblist.get(position).getmDescription());
-        intent.putExtra(JOB_STATUS, joblist.get(position).getmApplied());
-
-        // if score is 10, remove decimal as it cant fit
-        if (joblist.get(position).getmScore()<9.9){
-            intent.putExtra(JOB_SCORE,  String.format(Locale.US,"%.1f", joblist.get(position).getmScore()));}
-        else {
-            intent.putExtra(JOB_SCORE,  String.format(Locale.US,"%.0f", joblist.get(position).getmScore()));}
-
-        intent.putExtra(JOB_NOTE, joblist.get(position).getmNote());
         intent.putExtra(JOB_INDEX, position);
-        final String nameOfImage = "img_"+position;
-        intent.putExtra(JOB_IMAGE, nameOfImage);
         ImageView imgView = (ImageView) rvJobs.findViewHolderForAdapterPosition(position).itemView.findViewById(R.id.imgLogo);
         Pair[] pairs = new Pair[1];
         pairs[0] = new Pair<View,String>(imgView,"imageTransition");
-
         ActivityOptions options = ActivityOptions.makeSceneTransitionAnimation(this, pairs);
-
         this.startActivityForResult(intent, REQUEST_NOTE , options.toBundle());
     }
 
     @Override
     public boolean onJobLongClick(int position) {
         Intent intent = new Intent(this, NoteActivity.class);
-        intent.putExtra(JOB_COMPANY, joblist.get(position).getmCompany());
-        intent.putExtra(JOB_LOCATION, joblist.get(position).getmLocation());
-        intent.putExtra(JOB_TITLE, joblist.get(position).getmTitle());
-        intent.putExtra(JOB_DESCRIPTION, joblist.get(position).getmDescription());
-        intent.putExtra(JOB_STATUS, joblist.get(position).getmApplied());
-        intent.putExtra(JOB_SCORE, String.format(Locale.US, "%.1f", joblist.get(position).getmScore()));
         intent.putExtra(JOB_INDEX, position);
-        intent.putExtra(JOB_NOTE, joblist.get(position).getmNote());
         this.startActivityForResult(intent, REQUEST_NOTEACTIVITY);
         return true;
     }
@@ -250,7 +260,7 @@ public class MainActivity extends AppCompatActivity implements JobAdapter.OnJobL
     @Override
     public void onSaveInstanceState(Bundle savedInstanceState){
         String someString = "this is a string";
-        savedInstanceState.putSerializable(JOBLIST, joblist);
+        //savedInstanceState.putSerializable(JOBLIST, BoundBackgroundService.getjoblist());
         //declare values before saving the state
         super.onSaveInstanceState(savedInstanceState);
     }
@@ -259,7 +269,7 @@ public class MainActivity extends AppCompatActivity implements JobAdapter.OnJobL
     private void runLayoutAnimation(final RecyclerView recyclerView) {
         final Context context = recyclerView.getContext();
         final LayoutAnimationController controller =
-                AnimationUtils.loadLayoutAnimation(context, R.anim.layout_animation);
+                AnimationUtils.loadLayoutAnimation(context, R.anim.layout_fadein);
 
         recyclerView.setLayoutAnimation(controller);
         recyclerView.getAdapter().notifyDataSetChanged();

@@ -14,4 +14,9 @@
     <string name="txtNotes">Notes..</string>
     <string name="textnavn">Hej</string>
 
+    <string name="service1">A started service that runs in the background</string>
+    <string name="SearchBtn">Search</string>
+    <string name="SearchTxt">Filter..</string>
+    <string name="Favorite">Favorite</string>
+
 </resources>

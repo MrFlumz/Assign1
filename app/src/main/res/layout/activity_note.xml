@@ -8,14 +8,13 @@
     android:label="@string/picker_activity"
     android:clipToPadding="false"
     android:background="@color/background_color"
-    android:layoutAnimation="@anim/layout_animation"
+    android:layoutAnimation="@anim/layout_fadein"
 
     >
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:background="@drawable/card"
-        android:layoutAnimation="@anim/layout_animation"
         android:layout_marginStart="10dp"
         android:layout_marginTop="10dp"
         android:layout_marginEnd="10dp"
@@ -165,34 +164,53 @@
             android:id="@+id/switchbox"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="20dp"
+            android:layout_marginStart="50dp"
+            android:layout_marginEnd="50dp"
             android:orientation="horizontal"
-            android:paddingTop="10dp"
-            android:paddingBottom="10dp"
+            android:paddingTop="0dp"
+            android:paddingBottom="0dp"
+            app:layout_constraintBottom_toTopOf="@+id/bar1"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/seekBar">
+            app:layout_constraintTop_toBottomOf="@+id/SwitchApplied">
+
+            <ImageView
+                android:id="@+id/imgFavorite"
+                android:layout_width="76dp"
+                android:layout_height="71dp"
+                android:layout_weight="1"
+                app:srcCompat="@drawable/ic_star_border_24dp" />
 
             <TextView
-                android:id="@+id/txtApplied"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/Applied"
-                android:textSize="24sp" />
-
-            <Switch
-                android:paddingTop="10dp"
-                android:paddingLeft="10dp"
-                android:paddingBottom="15dp"
-                android:paddingRight="10dp"
-                android:id="@+id/SwitchApplied"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:scaleX="1.5"
-                android:scaleY="1.5"/>
+                android:id="@+id/txtFavorite"
+                android:layout_width="112dp"
+                android:layout_height="match_parent"
+                android:ems="10"
+                android:gravity="center"
+                android:inputType="textPersonName"
+                android:text="@string/Favorite"
+                android:textSize="30sp" />
 
 
         </LinearLayout>
+
+        <CheckBox
+            android:id="@+id/SwitchApplied"
+            android:layout_width="196dp"
+            android:layout_height="43dp"
+            android:paddingLeft="10dp"
+            android:paddingTop="0dp"
+            android:paddingRight="10dp"
+            android:paddingBottom="0dp"
+            android:scaleX="1.5"
+            android:scaleY="1.5"
+            android:text="@string/Applied"
+            android:textAlignment="textEnd"
+            android:textSize="24sp"
+            app:layout_constraintBottom_toTopOf="@+id/switchbox"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/seekBar" />
 
 
     </androidx.constraintlayout.widget.ConstraintLayout>
