@@ -7,13 +7,13 @@ import android.app.NotificationManager;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
-import android.os.AsyncTask;
 import android.os.Binder;
 import android.os.IBinder;
 import android.util.Log;
 import android.widget.Toast;
 
 import androidx.core.app.NotificationCompat;
+import androidx.lifecycle.LiveData;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
 import com.android.volley.Request;
@@ -23,15 +23,15 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.example.assignment1.model.JobModel;
+import com.facebook.stetho.Stetho;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonParser;
 
-import com.facebook.stetho.Stetho;
-import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.ExecutionException;
 
 public class BackgroundService extends Service {
 
@@ -43,9 +43,11 @@ public class BackgroundService extends Service {
     public static final String JOBLIST_UPDATED = "JOBLIST_UPDATED";
     //The IBinder instance to return
 
+    private JobRepository mRepository;
     private boolean started = false;
     private long wait = 1000L;
     public List<JobModel> RawJobList = new ArrayList<>();
+    private LiveData<List<JobModel>> mAllJobs;
     RequestQueue queue;
 
     private static final long DEFAULT_WAIT = 30*1000; //default = 30s
@@ -78,6 +80,10 @@ public class BackgroundService extends Service {
         return RawJobList;
     }
 
+    public void setRawJobList(List<JobModel> list ){
+        RawJobList = list;
+    }
+
 
     public BackgroundService() {
     }
@@ -98,6 +104,12 @@ public class BackgroundService extends Service {
             wait = intent.getLongExtra(EXTRA_TASK_TIME_MS, DEFAULT_WAIT);
             Log.d(LOG, "Background service onStartCommand with wait: " + wait + "ms");
             started = true;
+            try {
+                mRepository = new JobRepository(getApplication());
+            }
+            catch (Exception e){}
+
+
 
             if(runAsForegroundService) {
 
@@ -140,8 +152,6 @@ public class BackgroundService extends Service {
 
         //create asynch tasks that sleeps X ms and then sends broadcast
 
-        BackgroundThingTask task = new BackgroundThingTask(this);
-        task.execute(time); //L means long number format
 
     }
 
@@ -161,47 +171,8 @@ public class BackgroundService extends Service {
         super.onDestroy();
     }
 
-    //lets make an asynch task to use just in this activity...
-    private static class BackgroundThingTask extends AsyncTask<Long, String, String> {
-
-        //WeakReference is Java's way of indicating that the referenced object can be garbage collected if needed
-        //we need this to avoid holding onto the service if the asynch task goes on (causing memory leak)
-        private WeakReference<BackgroundService> serviceRef;
-        private long waitTimeInMilis;
-        // only retain a weak reference to the activityReference
-        BackgroundThingTask(BackgroundService service) {
-            serviceRef = new WeakReference<>(service);
-        }
-
-        @Override
-        protected void onPreExecute() {
-            super.onPreExecute();
-        }
-
-        @Override
-        protected String doInBackground(Long... time) {
-
-
-            return "saved";
-        }
-
-        @Override
-        protected void onPostExecute(String stringResult) {
-
-            BackgroundService service = serviceRef.get();
-            if (service != null) {
-
-                service.broadcastTaskResult(stringResult);
-
-                //if Service is still running, keep doing this recursively
-                //if(service.started){
-                    //service.doBackgroundSave(waitTimeInMilis);
-                //}
-            }
-        }
-    }
-
-    void getGithubJobList(String filter){
+    void getJobList(String filter)throws ExecutionException, InterruptedException{
+        RawJobList = mRepository.getAllJobs();
         if (filter == "") {
             sendRequest("https://jobs.github.com/positions.json");
         }
@@ -211,16 +182,11 @@ public class BackgroundService extends Service {
         }
     }
 
-    void getRoomJobList(){
-        try {
-            List<JobModel> temp = loadTasks();
-            if (temp != null){
-                RawJobList = temp;
-                broadcastTaskResult(JOBLIST_UPDATED);}
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+    void getRoomJobList() throws ExecutionException, InterruptedException{
+        RawJobList.clear();
+        RawJobList = mRepository.getAllJobs();
     }
+
 
     private void sendRequest(String url){
         if(queue==null){
@@ -247,34 +213,42 @@ public class BackgroundService extends Service {
     }
 
     private void parseJson(String json){
-        RawJobList.clear();
         Gson gson = new GsonBuilder().create();
         JsonParser jsonParser = new JsonParser();
         JsonArray jsonArray = (JsonArray) jsonParser.parse(json);
+        int sizeOfFavorite = RawJobList.size();
+
         for (int i = 0; i < jsonArray.size(); i++) {
             JobModel job =  gson.fromJson(jsonArray.get(i).toString(), JobModel.class);
-            RawJobList.add(job);
+            boolean same = false;
+            for (int u = 0; u < sizeOfFavorite; u++) {
+                if (job.getId().equals(RawJobList.get(u).getId())){
+                    same = true;
+                }
+            }
+
+            if (!same) {RawJobList.add(job);}
         }
         broadcastTaskResult(JOBLIST_UPDATED);
     }
 
 
     public void addJob(JobModel t){
-        t = RawJobList.get(1);
-        Log.d("logig",t.toString());
         try {
-            ((JobApplication)getApplicationContext()).getJobDatabase().JobDao().insertAll(t);
+            mRepository.insert(t);
         } catch (Exception e) {
             Log.e("MYAPP", "exception", e);
         }
     }
-    public void deleteTask(JobModel t){
-        ((JobApplication)getApplicationContext()).getJobDatabase().JobDao().delete(t);;
+    public void delJob(JobModel t){
+        try {
+            mRepository.remove(t);
+        } catch (Exception e) {
+            Log.e("MYAPP", "exception", e);
+        }
     }
 
-    public List<JobModel> loadTasks(){
-        return ((JobApplication)getApplicationContext()).getJobDatabase().JobDao().getAll();
-    }
+
     private void enableStethos(){
 
            /* Stetho initialization - allows for debugging features in Chrome browser
@@ -292,4 +266,5 @@ public class BackgroundService extends Service {
                 .build());
         /* end Stethos */
     }
+
 }

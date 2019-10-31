@@ -18,5 +18,6 @@
     <string name="SearchBtn">Search</string>
     <string name="SearchTxt">Filter..</string>
     <string name="Favorite">Favorite</string>
+    <string name="btnRemove">Remove</string>
 
 </resources>

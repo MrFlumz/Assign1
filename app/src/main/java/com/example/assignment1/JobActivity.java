@@ -11,7 +11,6 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.text.Html;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
@@ -33,6 +32,7 @@ public class JobActivity extends AppCompatActivity {
     TextView txtDescription;
     TextView txtScore;
     TextView txtStatus;
+    Button btnRemove;
 
     SeekBar SeekbarPicker;
     TextView txtNote;
@@ -72,23 +72,31 @@ public class JobActivity extends AppCompatActivity {
         btnSave = findViewById(R.id.btnSave);
         txtNote = findViewById(R.id.txtNote);
         txtApplied = findViewById(R.id.txtStatus);
-
-
-
-
+        btnRemove = findViewById(R.id.btnRemove);
 
         btnSave.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent returnIntent = new Intent();
-                returnIntent.putExtra(MainActivity.JOB_NOTE,txtNote.getText().toString());
-                Log.d("helolo", Integer.toString(position));
-                returnIntent.putExtra(MainActivity.JOB_INDEX, position);
-                setResult(RESULT_OK,returnIntent);
+                setResult(RESULT_OK);
                 finish();
             }
         });
+
+        btnRemove.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (bound && BoundBackgroundService != null) {
+                    BoundBackgroundService.delJob(BoundBackgroundService.getRawJobList().get(position));
+                    BoundBackgroundService.getRawJobList().remove(position);
+                    setResult(RESULT_OK);
+                    finish();
+                }
+            }
+        });
+
     }
+
+
 
     public void setAppliedText(boolean applied){
         if(applied){

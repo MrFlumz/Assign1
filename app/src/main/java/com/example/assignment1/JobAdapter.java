@@ -10,7 +10,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.content.ContextCompat;
@@ -28,14 +27,16 @@ public class JobAdapter extends RecyclerView.Adapter<JobAdapter.ViewHolder> {
     private Context mContext;
     private OnJobListener mOnJobListener;
     private OnJobLongListener mOnJobLongListener;
+    private OnJobFavoriteListener mOnJobFavoriteListener;
     private boolean favorited;
     private ViewHolder viewHolderTemp;
 
-    public JobAdapter(Context context, List<JobModel> JobModel, OnJobListener onJobListener, OnJobLongListener onJobLongListener) {
+    public JobAdapter(Context context, List<JobModel> JobModel, OnJobListener onJobListener, OnJobLongListener onJobLongListener, OnJobFavoriteListener OnJobFavoriteListener) {
         mJobModel = JobModel;
         mContext = context;
         this.mOnJobListener = onJobListener;
         this.mOnJobLongListener = onJobLongListener;
+        this.mOnJobFavoriteListener = OnJobFavoriteListener;
 
     }
 
@@ -51,7 +52,7 @@ public class JobAdapter extends RecyclerView.Adapter<JobAdapter.ViewHolder> {
         View contactView = inflater.inflate(R.layout.item_demo, parent, false);
 
         // Return a new holder instance
-        ViewHolder viewHolder = new ViewHolder(contactView,mOnJobListener,mOnJobLongListener);
+        ViewHolder viewHolder = new ViewHolder(contactView,mOnJobListener,mOnJobLongListener, mOnJobFavoriteListener);
         return viewHolder;
     }
 
@@ -125,9 +126,10 @@ public class JobAdapter extends RecyclerView.Adapter<JobAdapter.ViewHolder> {
         public ImageView imgFavorite;
         OnJobListener onJobListener;
         OnJobLongListener onJobLongListener;
+        OnJobFavoriteListener onJobFavoriteListener;
         // We also create a constructor that accepts the entire item row
         // and does the view lookups to find each subview
-        public ViewHolder(View itemView, OnJobListener onJobListener, OnJobLongListener onJobLongListener) {
+        public ViewHolder(View itemView, OnJobListener onJobListener, OnJobLongListener onJobLongListener, OnJobFavoriteListener OnJobFavoriteListener) {
             // Stores the itemView in a public final member variable that can be used
             // to access the context from any ViewHolder instance.
             super(itemView);
@@ -135,6 +137,7 @@ public class JobAdapter extends RecyclerView.Adapter<JobAdapter.ViewHolder> {
             itemView.setOnLongClickListener(this);
             this.onJobListener = onJobListener;
             this.onJobLongListener = onJobLongListener;
+            this.onJobFavoriteListener = OnJobFavoriteListener;
             txtCompany =    itemView.findViewById(R.id.txtCompany);
             txtTitle =      itemView.findViewById(R.id.txtJobtitle);
             txtStatus =     itemView.findViewById(R.id.txtStatusStatic);
@@ -143,11 +146,12 @@ public class JobAdapter extends RecyclerView.Adapter<JobAdapter.ViewHolder> {
             imgLogo =       itemView.findViewById(R.id.imgLogo);
             imgFavorite =   itemView.findViewById(R.id.imgFavorite);
 
+
             imgFavorite.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     favorited = favorited ? false : true;
-
+                    onJobFavoriteListener.favoriteItem(getAdapterPosition());
                     if (favorited){
                         mJobModel.get(getAdapterPosition()).setFavorited(favorited);
                         imgFavorite.setImageResource(R.drawable.ic_star_24dp);
@@ -156,7 +160,6 @@ public class JobAdapter extends RecyclerView.Adapter<JobAdapter.ViewHolder> {
                         mJobModel.get(getAdapterPosition()).setFavorited(favorited);
                         imgFavorite.setImageResource(R.drawable.ic_star_border_24dp);
                     }
-                    Toast.makeText(mContext, "Application closed", Toast.LENGTH_SHORT).show();
                 }
             });
         }
@@ -188,5 +191,7 @@ public class JobAdapter extends RecyclerView.Adapter<JobAdapter.ViewHolder> {
             }
     }
 
-
+    public interface OnJobFavoriteListener{
+        void favoriteItem(int position);
+    }
 }

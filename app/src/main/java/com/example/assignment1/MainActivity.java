@@ -31,7 +31,7 @@ import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-public class MainActivity extends AppCompatActivity implements JobAdapter.OnJobListener, JobAdapter.OnJobLongListener{
+public class MainActivity extends AppCompatActivity implements JobAdapter.OnJobListener, JobAdapter.OnJobLongListener, JobAdapter.OnJobFavoriteListener{
 
     public static final String JOB_COMPANY = "JOB_COMPANY";
     public static final String JOB_LOCATION = "JOB_LOCATION";
@@ -90,7 +90,11 @@ public class MainActivity extends AppCompatActivity implements JobAdapter.OnJobL
             @Override
             public void onClick(View v) {
                 if(bound && BoundBackgroundService!=null){
-                    BoundBackgroundService.getGithubJobList(txtSearch.getText().toString());
+                    try {
+                        BoundBackgroundService.getJobList(txtSearch.getText().toString());
+                    }catch (Exception e){
+                        Log.e("h","hhhh",e);
+                    }
                 }
             }
         });
@@ -142,8 +146,8 @@ public class MainActivity extends AppCompatActivity implements JobAdapter.OnJobL
 
     private void handleBackgroundResult(String result){
         Toast.makeText(this, "Application closed", Toast.LENGTH_SHORT).show();
-
-            adapter.notifyDataSetChanged();
+            adapter = new JobAdapter(getApplicationContext(), BoundBackgroundService.getRawJobList(),MainActivity.this, MainActivity.this, MainActivity.this);
+            rvJobs.setAdapter(adapter);
 
         //runLayoutAnimation(rvJobs);
     }
@@ -165,13 +169,17 @@ public class MainActivity extends AppCompatActivity implements JobAdapter.OnJobL
             BoundBackgroundService = binder.getService();
             bound = true;
 
-            adapter = new JobAdapter(getApplicationContext(), BoundBackgroundService.getRawJobList(),MainActivity.this, MainActivity.this);
+            try {
+                BoundBackgroundService.getRoomJobList();
+            }catch (Exception e){}
+
+
+            adapter = new JobAdapter(getApplicationContext(), BoundBackgroundService.getRawJobList(),MainActivity.this, MainActivity.this,MainActivity.this);
             rvJobs.setAdapter(adapter);
             rvJobs.setLayoutManager(new LinearLayoutManager(getApplicationContext()));
             //rvJobs.setItemAnimator(new SlideInUpAnimator());
             Decoration itemDecoration = new Decoration(getApplicationContext(),R.dimen.card_offset_R,R.dimen.card_offset_T,R.dimen.card_offset_L,R.dimen.card_offset_B);
             rvJobs.addItemDecoration(itemDecoration);
-            BoundBackgroundService.getRoomJobList();
         }
 
         @Override
@@ -205,13 +213,11 @@ public class MainActivity extends AppCompatActivity implements JobAdapter.OnJobL
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == REQUEST_NOTEACTIVITY) {
             if (resultCode == RESULT_OK) {
-
                 adapter.notifyDataSetChanged();
             }
         }
         else if(requestCode == REQUEST_NOTE){
             if (resultCode == RESULT_OK) {
-                BoundBackgroundService.addJob(BoundBackgroundService.getRawJobList().get(1));
                 adapter.notifyDataSetChanged();
             }
         }
@@ -255,6 +261,19 @@ public class MainActivity extends AppCompatActivity implements JobAdapter.OnJobL
         return true;
     }
 
+    @Override
+    public void favoriteItem(int position) {
+        if (bound && BoundBackgroundService != null) {
+            if (BoundBackgroundService.getRawJobList().get(position).getFavorited()) { // hvis allerede fav, så slet
+                BoundBackgroundService.delJob(BoundBackgroundService.getRawJobList().get(position));
+                BoundBackgroundService.getRawJobList().get(position).setFavorited(false);
+                Toast.makeText(this, "Non Fav", Toast.LENGTH_SHORT).show();}
+            else {
+            BoundBackgroundService.addJob(BoundBackgroundService.getRawJobList().get(position));
+            BoundBackgroundService.getRawJobList().get(position).setFavorited(true);
+            Toast.makeText(this, "Fav", Toast.LENGTH_SHORT).show();}
+        }
+    }
 
 
     @Override

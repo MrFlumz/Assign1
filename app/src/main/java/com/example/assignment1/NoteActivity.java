@@ -127,7 +127,10 @@ public class NoteActivity extends AppCompatActivity {
                     BoundBackgroundService.getRawJobList().get(position).setScore(Float.parseFloat(score));}
                 BoundBackgroundService.getRawJobList().get(position).setFavorited(favorited);
                 setResult(RESULT_OK,returnIntent);
-                BoundBackgroundService.addJob(BoundBackgroundService.getRawJobList().get(position));
+                if (favorited) {
+                    BoundBackgroundService.addJob(BoundBackgroundService.getRawJobList().get(position));}
+                else {
+                    BoundBackgroundService.delJob(BoundBackgroundService.getRawJobList().get(position));}
                 finish();
             }
         });
