@@ -1,14 +1,21 @@
 package com.example.assignment1;
 
 
+import android.app.AlarmManager;
 import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.app.Service;
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.media.RingtoneManager;
+import android.os.AsyncTask;
 import android.os.Binder;
+import android.os.Build;
 import android.os.IBinder;
+import android.os.SystemClock;
 import android.util.Log;
 import android.widget.Toast;
 
@@ -29,6 +36,7 @@ import com.google.gson.GsonBuilder;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonParser;
 
+import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
@@ -39,11 +47,13 @@ public class BackgroundService extends Service {
     public static final String EXTRA_TASK_RESULT = "task_result";
     public static final String EXTRA_TASK_TIME_MS = "task_time";
     private static final String LOG = "BG_SERVICE";
-    private static final int NOTIFY_ID = 142;
+    private static final int NOTIFY_ID = 169;
     public static final String JOBLIST_UPDATED = "JOBLIST_UPDATED";
+    public static String NOTIFICATION_ID = "notification_id";
+    public static String NOTIFICATION = "notification";
     //The IBinder instance to return
 
-    private JobRepository mRepository;
+    private com.example.assignment1.JobRepository mRepository;
     private boolean started = false;
     private long wait = 1000L;
     public List<JobModel> RawJobList = new ArrayList<>();
@@ -79,6 +89,8 @@ public class BackgroundService extends Service {
     public List<JobModel> getRawJobList(){
         return RawJobList;
     }
+
+
 
     public void setRawJobList(List<JobModel> list ){
         RawJobList = list;
@@ -127,17 +139,18 @@ public class BackgroundService extends Service {
                 Notification notification =
                         new NotificationCompat.Builder(this, "myChannel")
 
-                                .setSmallIcon(R.mipmap.ic_launcher)
+                                .setSmallIcon(R.drawable.ic_star_24dp)
                                 //        .setContentIntent(pendingIntent)
                                 .setChannelId("myChannel")
                                 .build();
 
                 //calling Android to
                 startForeground(NOTIFY_ID, notification);
+                scheduleNotification(this,3000,100);
             }
 
             //do background thing
-            doBackgroundSave(wait);
+            //startNoficationTask(5000L);
         } else {
             Log.d(LOG, "Background service onStartCommand - already started!");
         }
@@ -145,14 +158,66 @@ public class BackgroundService extends Service {
         //return super.onStartCommand(intent, flags, startId);
     }
 
+    private void startNoficationTask(Long waitTimeInMilis){
+        //create asynch tasks that sleeps X ms and then sends notification
+        BackgroundNotifications task = new BackgroundNotifications(this,getApplicationContext());
+        task.execute(5000L); //L means long number format
+    }
 
 
-    //using recursion for running this as a loop
-    public void doBackgroundSave(long time){
+    //lets make an asynch task to use just in this activity...
+    private static class BackgroundNotifications extends AsyncTask<Long, Boolean, Boolean> {
+        private WeakReference<BackgroundService> serviceRef;
+        private Context mContext;
+        private long waitTimeInMilis;
+        // only retain a weak reference to the activityReference
+        BackgroundNotifications(BackgroundService service, Context context) {
+            mContext = context;
+            serviceRef = new WeakReference<>(service);
+        }
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+        }
 
-        //create asynch tasks that sleeps X ms and then sends broadcast
+        @Override
+        protected Boolean doInBackground(Long... time) {
+            waitTimeInMilis = time[0];
+            try {
+                Thread.sleep(waitTimeInMilis);
+            } catch (Exception e) { return false;}
+            return true;
+        }
 
+        @Override
+        protected void onPostExecute(Boolean stringResult) {
 
+            NotificationCompat.Builder builder = new NotificationCompat.Builder(mContext, "JobHunt")
+                    .setSmallIcon(R.drawable.ic_star_24dp)
+                    .setContentTitle("hej")
+                    .setContentText("hej")
+                    .setPriority(NotificationCompat.PRIORITY_DEFAULT);
+            NotificationManager mNotificationManager = (NotificationManager) mContext.getSystemService(Context.NOTIFICATION_SERVICE);
+            // === Removed some obsoletes
+            if (Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O)
+            {
+                String channelId = "Your_channel_id";
+                NotificationChannel channel = new NotificationChannel(
+                        channelId,
+                        "Channel human readable title",
+                        NotificationManager.IMPORTANCE_LOW);
+                mNotificationManager.createNotificationChannel(channel);
+                builder.setChannelId(channelId);
+            }
+            mNotificationManager.notify(NOTIFY_ID,builder.build());
+
+            Toast.makeText(mContext, "Application tried notification", Toast.LENGTH_LONG).show();
+
+            BackgroundService service = serviceRef.get();
+            if (service != null) {
+                service.startNoficationTask(waitTimeInMilis);
+            }
+        }
     }
 
     //send local broadcast
@@ -185,6 +250,10 @@ public class BackgroundService extends Service {
     void getRoomJobList() throws ExecutionException, InterruptedException{
         RawJobList.clear();
         RawJobList = mRepository.getAllJobs();
+    }
+
+    List<JobModel> getFavoriteJobs() throws ExecutionException, InterruptedException{
+        return mRepository.getAllJobs();
     }
 
 
@@ -267,4 +336,17 @@ public class BackgroundService extends Service {
         /* end Stethos */
     }
 
+
+    public void scheduleNotification(Context context, long delay, int notificationId) {//delay is after how much time(in millis) from current time you want to schedule the notification
+        Intent intent = new Intent(context, BackgroundService.class);
+        PendingIntent activity = PendingIntent.getActivity(context, notificationId, intent, PendingIntent.FLAG_CANCEL_CURRENT);
+
+        Intent notificationIntent = new Intent(context, NotificationPublisher.class);
+        notificationIntent.putExtra(NOTIFICATION_ID, notificationId);
+        PendingIntent pendingIntent = PendingIntent.getBroadcast(context, notificationId, notificationIntent, PendingIntent.FLAG_CANCEL_CURRENT);
+
+        long futureInMillis = SystemClock.elapsedRealtime() + delay;
+        AlarmManager alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
+        alarmManager.setRepeating(AlarmManager.ELAPSED_REALTIME_WAKEUP,SystemClock.elapsedRealtime(),2*60*1000,pendingIntent);
+    }
 }

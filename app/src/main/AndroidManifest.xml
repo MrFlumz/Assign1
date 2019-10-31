@@ -30,7 +30,7 @@
             android:description="@string/service1"
             android:enabled="true"
             android:exported="false" />
-
+        <receiver android:name=".NotificationPublisher"/>
     </application>
 
 </manifest>
