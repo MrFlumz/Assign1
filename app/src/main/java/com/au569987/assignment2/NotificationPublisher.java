@@ -1,6 +1,5 @@
-package com.example.assignment1;
+package com.au569987.assignment2;
 
-import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.content.BroadcastReceiver;
@@ -8,19 +7,19 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
-import android.graphics.Bitmap;
 import android.os.Build;
 import android.os.IBinder;
 
 import androidx.core.app.NotificationCompat;
-import androidx.recyclerview.widget.LinearLayoutManager;
 
-import com.bumptech.glide.Glide;
-import com.bumptech.glide.annotation.GlideType;
-import com.example.assignment1.model.JobModel;
+import com.au569987.assignment2.model.JobModel;
 
 import java.util.List;
 import java.util.Random;
+
+/*
+* https://developer.android.com/guide/topics/ui/notifiers/notifications
+* */
 
 public class NotificationPublisher extends BroadcastReceiver {
 
@@ -41,17 +40,15 @@ public class NotificationPublisher extends BroadcastReceiver {
             }catch (Exception e){}
 
             if (favoriteJobs.size()!= 0) {
-                JobModel job = service.getRawJobList().get(new Random().nextInt(service.getRawJobList().size()));
+                JobModel job = favoriteJobs.get(new Random().nextInt(favoriteJobs.size()));
                 builder.setSmallIcon(R.drawable.ic_star_24dp);
-                builder.setContentTitle("Become a " + job.getTitle() + " at " + job.getCompany());
-                builder.setContentText("Apply now!");
-
-
+                builder.setContentTitle(service.getString(R.string.Notification_become_pt1) + job.getTitle() + service.getString(R.string.Notification_become_pt2) + job.getCompany());
+                builder.setContentText(service.getString(R.string.Notification_apply_now));
             }
             else{
                 builder.setSmallIcon(R.drawable.ic_star_24dp);
-                builder.setContentTitle("Start looking now!");
-                builder.setContentText("You haven't got any favorite jobs at the moment.");
+                builder.setContentTitle(service.getString(R.string.Notification_start_looking));
+                builder.setContentText(service.getString(R.string.Notification_no_favorites));
 
             }
 
