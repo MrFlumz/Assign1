@@ -1,4 +1,4 @@
-package com.example.assignment1;
+package com.au569987.assignment2;
 
 import android.content.Context;
 
@@ -6,8 +6,10 @@ import androidx.room.Database;
 import androidx.room.Room;
 import androidx.room.RoomDatabase;
 
-import com.example.assignment1.model.JobModel;
-
+import com.au569987.assignment2.model.JobModel;
+/**
+ Room implementering er lavet med inspiration fra https://codelabs.developers.google.com/codelabs/android-room-with-a-view/?fbclid=IwAR0Ralb-PwYVCpSXFN54-E8oXwPjMV95sTbynuQhwezPdTMgZLKZS5hCkic#0
+ */
 @Database(entities = {JobModel.class}, version = 1)
 public abstract class JobDatabase extends RoomDatabase {
 
