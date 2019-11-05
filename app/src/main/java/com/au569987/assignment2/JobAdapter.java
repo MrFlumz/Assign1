@@ -1,10 +1,9 @@
-package com.example.assignment1;
+package com.au569987.assignment2;
 
 import android.content.Context;
 import android.graphics.Color;
 import android.graphics.PorterDuff;
 import android.graphics.PorterDuffColorFilter;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,7 +15,7 @@ import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
-import com.example.assignment1.model.JobModel;
+import com.au569987.assignment2.model.JobModel;
 
 import java.util.List;
 import java.util.Locale;
@@ -78,14 +77,14 @@ public class JobAdapter extends RecyclerView.Adapter<JobAdapter.ViewHolder> {
         // Applied ændrer farve efter om der er søgt eller ej
 
         if (mJobModel.get(position).getApplied()){
-            viewHolder.txtStatus.setText("APPLIED");
+            viewHolder.txtStatus.setText(R.string.List_applied);
             viewHolder.txtStatus.setTextColor(ContextCompat.getColor(mContext , R.color.applied));// should be resource
         }
         else{
-            viewHolder.txtStatus.setText("NOT APP");
+            viewHolder.txtStatus.setText(R.string.List_not_applied);
             viewHolder.txtStatus.setTextColor(ContextCompat.getColor(mContext , R.color.not_applied));
         }
-        Log.d("heeeej", mJobModel.get(position).getStatusColor());
+        //Log.d("adapter", mJobModel.get(position).getStatusColor());
         PorterDuffColorFilter colorfilter = new PorterDuffColorFilter(Color.parseColor(mJobModel.get(position).getStatusColor()), PorterDuff.Mode.MULTIPLY);
         viewHolder.txtScore.getBackground().setColorFilter(colorfilter);
 
