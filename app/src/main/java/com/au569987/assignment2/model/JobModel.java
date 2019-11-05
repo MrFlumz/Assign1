@@ -1,6 +1,8 @@
 
-package com.example.assignment1.model;
+package com.au569987.assignment2.model;
 
+import android.os.Parcel;
+import android.os.Parcelable;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
@@ -12,9 +14,12 @@ import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
 @Entity
-public class JobModel {
+public class JobModel implements Parcelable {
 
-    /* AUTO GENERATED CODE */
+    /* GENERATED CODE FROM
+    *  http://www.jsonschema2pojo.org/
+    *
+    * */
     @PrimaryKey
     @SerializedName("id")
     @Expose
@@ -160,6 +165,7 @@ public class JobModel {
     }
 
     /* CUSTOM CODE*/
+
     @ColumnInfo(name = "Score")
     private double Score = 0;
     @ColumnInfo(name = "Applied")
@@ -167,7 +173,7 @@ public class JobModel {
     @ColumnInfo(name = "Status_Color")
     private String StatusColor = "#bdbdbd";
     @ColumnInfo(name = "Note")
-    private String Note = "Notes..";
+    private String Note = "";
     @ColumnInfo(name = "Favorited")
     private Boolean Favorited = false;
 
@@ -209,7 +215,7 @@ public class JobModel {
 
 
         if(score<0 || score>10) {
-            Log.d("colorwas", "heeee");
+            Log.d("colorcalc", "error, value outside of bounds");
             return "N/A";   // outside of range
         }
         double lightness = 0.7;
@@ -239,4 +245,75 @@ public class JobModel {
         this.Note = mNote;
     }
 
+    public JobModel(){}
+
+    // Parsable code
+    // generated from http://www.parcelabler.com/
+
+    protected JobModel(Parcel in) {
+        id = in.readString();
+        type = in.readString();
+        url = in.readString();
+        createdAt = in.readString();
+        company = in.readString();
+        companyUrl = in.readString();
+        location = in.readString();
+        title = in.readString();
+        description = in.readString();
+        howToApply = in.readString();
+        companyLogo = in.readString();
+        Score = in.readDouble();
+        byte AppliedVal = in.readByte();
+        Applied = AppliedVal == 0x02 ? null : AppliedVal != 0x00;
+        StatusColor = in.readString();
+        Note = in.readString();
+        byte FavoritedVal = in.readByte();
+        Favorited = FavoritedVal == 0x02 ? null : FavoritedVal != 0x00;
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeString(id);
+        dest.writeString(type);
+        dest.writeString(url);
+        dest.writeString(createdAt);
+        dest.writeString(company);
+        dest.writeString(companyUrl);
+        dest.writeString(location);
+        dest.writeString(title);
+        dest.writeString(description);
+        dest.writeString(howToApply);
+        dest.writeString(companyLogo);
+        dest.writeDouble(Score);
+        if (Applied == null) {
+            dest.writeByte((byte) (0x02));
+        } else {
+            dest.writeByte((byte) (Applied ? 0x01 : 0x00));
+        }
+        dest.writeString(StatusColor);
+        dest.writeString(Note);
+        if (Favorited == null) {
+            dest.writeByte((byte) (0x02));
+        } else {
+            dest.writeByte((byte) (Favorited ? 0x01 : 0x00));
+        }
+    }
+
+    @SuppressWarnings("unused")
+    public static final Parcelable.Creator<JobModel> CREATOR = new Parcelable.Creator<JobModel>() {
+        @Override
+        public JobModel createFromParcel(Parcel in) {
+            return new JobModel(in);
+        }
+
+        @Override
+        public JobModel[] newArray(int size) {
+            return new JobModel[size];
+        }
+    };
 }
