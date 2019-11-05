@@ -1,4 +1,4 @@
-package com.example.assignment1;
+package com.au569987.assignment2;
 
 
 import android.app.AlarmManager;
@@ -7,10 +7,8 @@ import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.Service;
-import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
-import android.media.RingtoneManager;
 import android.os.AsyncTask;
 import android.os.Binder;
 import android.os.Build;
@@ -29,7 +27,7 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
-import com.example.assignment1.model.JobModel;
+import com.au569987.assignment2.model.JobModel;
 import com.facebook.stetho.Stetho;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -41,6 +39,11 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 
+
+/*
+ * https://developer.android.com/guide/components/services
+ * */
+
 public class BackgroundService extends Service {
 
     public static final String BROADCAST_BACKGROUND_SERVICE_RESULT = "com.leafcastle.android.servicesdemo.BROADCAST_BACKGROUND_SERVICE_RESULT";
@@ -49,11 +52,12 @@ public class BackgroundService extends Service {
     private static final String LOG = "BG_SERVICE";
     private static final int NOTIFY_ID = 169;
     public static final String JOBLIST_UPDATED = "JOBLIST_UPDATED";
+    public static final String NET_REQUEST = "Net_request";
     public static String NOTIFICATION_ID = "notification_id";
     public static String NOTIFICATION = "notification";
     //The IBinder instance to return
 
-    private com.example.assignment1.JobRepository mRepository;
+    private com.au569987.assignment2.JobRepository mRepository;
     private boolean started = false;
     private long wait = 1000L;
     public List<JobModel> RawJobList = new ArrayList<>();
@@ -80,24 +84,13 @@ public class BackgroundService extends Service {
         return binder;
     }
 
-    //simple method for returning current count
-    public int getCount(){
-        return 1;
-    }
-
-    //simple method for returning current count
+    // return the current list of jobs
     public List<JobModel> getRawJobList(){
         return RawJobList;
     }
 
-
-
     public void setRawJobList(List<JobModel> list ){
         RawJobList = list;
-    }
-
-
-    public BackgroundService() {
     }
 
     @Override
@@ -144,13 +137,14 @@ public class BackgroundService extends Service {
                                 .setChannelId("myChannel")
                                 .build();
 
-                //calling Android to
+                //Set service as a foreground service
                 startForeground(NOTIFY_ID, notification);
-                scheduleNotification(this,3000,100);
+                // set alarm to trigger notification every 2 minutes
+                scheduleNotification(this,2,100);
             }
 
-            //do background thing
-            //startNoficationTask(5000L);
+
+
         } else {
             Log.d(LOG, "Background service onStartCommand - already started!");
         }
@@ -158,66 +152,15 @@ public class BackgroundService extends Service {
         //return super.onStartCommand(intent, flags, startId);
     }
 
-    private void startNoficationTask(Long waitTimeInMilis){
-        //create asynch tasks that sleeps X ms and then sends notification
-        BackgroundNotifications task = new BackgroundNotifications(this,getApplicationContext());
-        task.execute(5000L); //L means long number format
-    }
-
-
-    //lets make an asynch task to use just in this activity...
-    private static class BackgroundNotifications extends AsyncTask<Long, Boolean, Boolean> {
-        private WeakReference<BackgroundService> serviceRef;
-        private Context mContext;
-        private long waitTimeInMilis;
-        // only retain a weak reference to the activityReference
-        BackgroundNotifications(BackgroundService service, Context context) {
-            mContext = context;
-            serviceRef = new WeakReference<>(service);
-        }
-        @Override
-        protected void onPreExecute() {
-            super.onPreExecute();
-        }
-
-        @Override
-        protected Boolean doInBackground(Long... time) {
-            waitTimeInMilis = time[0];
-            try {
-                Thread.sleep(waitTimeInMilis);
-            } catch (Exception e) { return false;}
-            return true;
-        }
-
-        @Override
-        protected void onPostExecute(Boolean stringResult) {
-
-            NotificationCompat.Builder builder = new NotificationCompat.Builder(mContext, "JobHunt")
-                    .setSmallIcon(R.drawable.ic_star_24dp)
-                    .setContentTitle("hej")
-                    .setContentText("hej")
-                    .setPriority(NotificationCompat.PRIORITY_DEFAULT);
-            NotificationManager mNotificationManager = (NotificationManager) mContext.getSystemService(Context.NOTIFICATION_SERVICE);
-            // === Removed some obsoletes
-            if (Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O)
-            {
-                String channelId = "Your_channel_id";
-                NotificationChannel channel = new NotificationChannel(
-                        channelId,
-                        "Channel human readable title",
-                        NotificationManager.IMPORTANCE_LOW);
-                mNotificationManager.createNotificationChannel(channel);
-                builder.setChannelId(channelId);
-            }
-            mNotificationManager.notify(NOTIFY_ID,builder.build());
-
-            Toast.makeText(mContext, "Application tried notification", Toast.LENGTH_LONG).show();
-
-            BackgroundService service = serviceRef.get();
-            if (service != null) {
-                service.startNoficationTask(waitTimeInMilis);
+    // get job that matches ID
+    JobModel getJob(String jobID) throws Exception{
+        int nr_of_jobs = RawJobList.size();
+        for (int i = 0; i < nr_of_jobs; i++){
+            if (RawJobList.get(i).getId().equals(jobID) ){
+                return RawJobList.get(i);
             }
         }
+        throw new Exception("ID does exist");
     }
 
     //send local broadcast
@@ -236,61 +179,63 @@ public class BackgroundService extends Service {
         super.onDestroy();
     }
 
-    void getJobList(String filter)throws ExecutionException, InterruptedException{
+    // update RawJobList using searchfilter
+    void getJobList(String filter,int number_of_jobs)throws ExecutionException, InterruptedException{
+
         RawJobList = mRepository.getAllJobs();
         if (filter == "") {
-            sendRequest("https://jobs.github.com/positions.json");
+            sendRequest("https://jobs.github.com/positions.json",number_of_jobs);
         }
         else {
             String url = "https://jobs.github.com/positions.json?description=" + filter;
-            sendRequest(url);
+            sendRequest(url,number_of_jobs);
         }
     }
 
-    void getRoomJobList() throws ExecutionException, InterruptedException{
-        RawJobList.clear();
-        RawJobList = mRepository.getAllJobs();
-    }
 
+
+    // return favorite jobs from Room database
     List<JobModel> getFavoriteJobs() throws ExecutionException, InterruptedException{
         return mRepository.getAllJobs();
     }
 
-
-    private void sendRequest(String url){
+    // send web request to github job api
+    private void sendRequest(String url,final int number_of_jobs){
         if(queue==null){
             queue = Volley.newRequestQueue(this);
         }
-
         StringRequest stringRequest = new StringRequest(Request.Method.GET, url,
                 new Response.Listener<String>() {
                     @Override
                     public void onResponse(String response) {
-                        Log.d("hihih","hel2");
-                        parseJson(response);
+                        Log.d(NET_REQUEST,"Succeded!");
+                        parseJson(response, number_of_jobs);
                     }
                 }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
 
-                Toast.makeText(getApplicationContext(), "Application could not load data", Toast.LENGTH_LONG).show();
-                Log.d("hihih", "That did not work!", error);
+                Toast.makeText(getApplicationContext(), getString(R.string.NetRequestLoadError), Toast.LENGTH_LONG).show();
+                Log.d(NET_REQUEST, "Failed!", error);
             }
         });
 
         queue.add(stringRequest);
     }
 
-    private void parseJson(String json){
+    // parse the json file sent from the github job api into seperate job objects
+    // favorite jobs is put in the list first
+    private void parseJson(String json, int number_of_jobs){
         Gson gson = new GsonBuilder().create();
         JsonParser jsonParser = new JsonParser();
         JsonArray jsonArray = (JsonArray) jsonParser.parse(json);
         int sizeOfFavorite = RawJobList.size();
-
-        for (int i = 0; i < jsonArray.size(); i++) {
+        int nr_of_jobs = number_of_jobs == 0 ? jsonArray.size() : number_of_jobs+sizeOfFavorite;
+        for (int i = 0; i < nr_of_jobs; i++) {
             JobModel job =  gson.fromJson(jsonArray.get(i).toString(), JobModel.class);
             boolean same = false;
-            for (int u = 0; u < sizeOfFavorite; u++) {
+
+            for (int u = 0; u < sizeOfFavorite; u++) { // dont put job in if already favorited
                 if (job.getId().equals(RawJobList.get(u).getId())){
                     same = true;
                 }
@@ -301,23 +246,25 @@ public class BackgroundService extends Service {
         broadcastTaskResult(JOBLIST_UPDATED);
     }
 
-
+    // add job to room database
     public void addJob(JobModel t){
         try {
             mRepository.insert(t);
         } catch (Exception e) {
-            Log.e("MYAPP", "exception", e);
+            Log.e("RoomError", "exception", e);
         }
     }
+
+    // del job from room database
     public void delJob(JobModel t){
         try {
             mRepository.remove(t);
         } catch (Exception e) {
-            Log.e("MYAPP", "exception", e);
+            Log.e("RoomError", "exception", e);
         }
     }
 
-
+    // used to debug the database at runtime
     private void enableStethos(){
 
            /* Stetho initialization - allows for debugging features in Chrome browser
@@ -336,8 +283,8 @@ public class BackgroundService extends Service {
         /* end Stethos */
     }
 
-
-    public void scheduleNotification(Context context, long delay, int notificationId) {//delay is after how much time(in millis) from current time you want to schedule the notification
+    // set alarm to publish notification once every two minues
+    public void scheduleNotification(Context context, long delay, int notificationId) {//delay is after how much time(in min) from current time you want to schedule the notification
         Intent intent = new Intent(context, BackgroundService.class);
         PendingIntent activity = PendingIntent.getActivity(context, notificationId, intent, PendingIntent.FLAG_CANCEL_CURRENT);
 
@@ -347,6 +294,6 @@ public class BackgroundService extends Service {
 
         long futureInMillis = SystemClock.elapsedRealtime() + delay;
         AlarmManager alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
-        alarmManager.setRepeating(AlarmManager.ELAPSED_REALTIME_WAKEUP,SystemClock.elapsedRealtime(),2*60*1000,pendingIntent);
+        alarmManager.setRepeating(AlarmManager.ELAPSED_REALTIME_WAKEUP,SystemClock.elapsedRealtime(),delay*60*1000,pendingIntent);
     }
 }
