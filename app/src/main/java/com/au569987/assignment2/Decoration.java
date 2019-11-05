@@ -1,4 +1,4 @@
-package com.example.assignment1;
+package com.au569987.assignment2;
 
 import android.content.Context;
 import android.graphics.Rect;
@@ -7,6 +7,12 @@ import android.view.View;
 import androidx.annotation.DimenRes;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
+
+/*
+* item decoration inspireret herfra
+* https://blog.fossasia.org/set-spacing-in-recyclerview-items-by-custom-item-decorator-in-phimpme-android-app/
+* Laver afstand imellem hver recycleview item.
+* */
 
 public class Decoration extends RecyclerView.ItemDecoration {
 
@@ -24,8 +30,6 @@ public class Decoration extends RecyclerView.ItemDecoration {
 
     }
 
-
-
     public Decoration(@NonNull Context context, @DimenRes int itemOffset_r,@DimenRes int itemOffset_t,@DimenRes int itemOffset_l,@DimenRes int itemOffset_b) {
 
         this(   context.getResources().getDimensionPixelSize(itemOffset_r),
@@ -36,7 +40,6 @@ public class Decoration extends RecyclerView.ItemDecoration {
     }
 
     @Override
-
     public void getItemOffsets(Rect outRect, View view, RecyclerView parent,
 
                                RecyclerView.State state) {
