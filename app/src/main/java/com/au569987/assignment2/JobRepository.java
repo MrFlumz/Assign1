@@ -1,14 +1,16 @@
-package com.example.assignment1;
+package com.au569987.assignment2;
 
 import android.app.Application;
 import android.os.AsyncTask;
 
-import com.example.assignment1.model.JobModel;
+import com.au569987.assignment2.model.JobModel;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
-
+/**
+ Room implementering er lavet med inspiration fra https://codelabs.developers.google.com/codelabs/android-room-with-a-view/?fbclid=IwAR0Ralb-PwYVCpSXFN54-E8oXwPjMV95sTbynuQhwezPdTMgZLKZS5hCkic#0
+ */
 public class JobRepository {
 
     private JobDAO mJobDao;
