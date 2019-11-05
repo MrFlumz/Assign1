@@ -1,4 +1,4 @@
-package com.example.assignment1;
+package com.au569987.assignment2;
 
 import android.app.ActivityOptions;
 import android.app.AlertDialog;
@@ -10,7 +10,6 @@ import android.content.IntentFilter;
 import android.content.ServiceConnection;
 import android.os.Bundle;
 import android.os.IBinder;
-import android.text.InputType;
 import android.transition.Fade;
 import android.transition.Transition;
 import android.util.Log;
@@ -65,17 +64,11 @@ public class MainActivity extends AppCompatActivity implements JobAdapter.OnJobL
         Intent intent = new Intent(this, BackgroundService.class);
         bindService(intent, connection, Context.BIND_AUTO_CREATE);
 
-
-
-
-
-
         setContentView(R.layout.activity_main);
         searchAlert = new AlertDialog.Builder(this);
         rvJobs = (RecyclerView) findViewById(R.id.rvDemos);
 
-
-        builderInit();
+        setTitle(getString(R.string.ListActivityName));
 
         Transition fade = new Fade();
         fade.excludeTarget(android.R.id.statusBarBackground, true);
@@ -91,9 +84,9 @@ public class MainActivity extends AppCompatActivity implements JobAdapter.OnJobL
             public void onClick(View v) {
                 if(bound && BoundBackgroundService!=null){
                     try {
-                        BoundBackgroundService.getJobList(txtSearch.getText().toString());
+                        BoundBackgroundService.getJobList(txtSearch.getText().toString(),0);
                     }catch (Exception e){
-                        Log.e("h","hhhh",e);
+                        Log.e("Room","Error",e);
                     }
                 }
             }
@@ -145,9 +138,9 @@ public class MainActivity extends AppCompatActivity implements JobAdapter.OnJobL
     };
 
     private void handleBackgroundResult(String result){
-        Toast.makeText(this, "Application closed", Toast.LENGTH_SHORT).show();
-            adapter = new JobAdapter(getApplicationContext(), BoundBackgroundService.getRawJobList(),MainActivity.this, MainActivity.this, MainActivity.this);
-            rvJobs.setAdapter(adapter);
+        //Toast.makeText(this, "Application closed", Toast.LENGTH_SHORT).show();
+        adapter = new JobAdapter(getApplicationContext(), BoundBackgroundService.getRawJobList(),MainActivity.this, MainActivity.this, MainActivity.this);
+        rvJobs.setAdapter(adapter);
 
         //runLayoutAnimation(rvJobs);
     }
@@ -169,9 +162,13 @@ public class MainActivity extends AppCompatActivity implements JobAdapter.OnJobL
             BoundBackgroundService = binder.getService();
             bound = true;
 
-            try {
-                BoundBackgroundService.getRoomJobList();
-            }catch (Exception e){}
+            if (BoundBackgroundService.getRawJobList().size() == 0){
+                try {
+                    BoundBackgroundService.getJobList("",10);
+                }catch (Exception e){}
+            }
+
+
 
 
             adapter = new JobAdapter(getApplicationContext(), BoundBackgroundService.getRawJobList(),MainActivity.this, MainActivity.this,MainActivity.this);
@@ -201,7 +198,7 @@ public class MainActivity extends AppCompatActivity implements JobAdapter.OnJobL
         switch (item.getItemId()) {
             case R.id.quit_application:
                 finish();
-                Toast.makeText(this, "Application closed", Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, getString(R.string.App_closed), Toast.LENGTH_SHORT).show();
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
@@ -213,37 +210,22 @@ public class MainActivity extends AppCompatActivity implements JobAdapter.OnJobL
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == REQUEST_NOTEACTIVITY) {
             if (resultCode == RESULT_OK) {
-                adapter.notifyDataSetChanged();
+                if (adapter != null)
+                    adapter.notifyDataSetChanged();
             }
         }
         else if(requestCode == REQUEST_NOTE){
             if (resultCode == RESULT_OK) {
-                adapter.notifyDataSetChanged();
+                if (adapter != null)
+                    adapter.notifyDataSetChanged();
             }
         }
 
     }
 
-    void builderInit(){
-        searchAlert.setTitle("Title");
-
-        // Set up the input
-        final EditText input = new EditText(this);
-        // Specify the type of input expected; this, for example, sets the input as a password, and will mask the text
-        input.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_PASSWORD);
-        searchAlert.setView(input);
-
-
-
-    }
-
-
-
     @Override
     public void onJobClick(int position) {
-
-
-        Toast.makeText(MainActivity.this, "Clicked on pos "+position, Toast.LENGTH_SHORT).show();
+        //Toast.makeText(MainActivity.this, "Clicked on pos "+position, Toast.LENGTH_SHORT).show();
         Intent intent = new Intent(this, JobActivity.class);
         intent.putExtra(JOB_INDEX, position);
         ImageView imgView = (ImageView) rvJobs.findViewHolderForAdapterPosition(position).itemView.findViewById(R.id.imgLogo);
@@ -267,23 +249,13 @@ public class MainActivity extends AppCompatActivity implements JobAdapter.OnJobL
             if (BoundBackgroundService.getRawJobList().get(position).getFavorited()) { // hvis allerede fav, så slet
                 BoundBackgroundService.delJob(BoundBackgroundService.getRawJobList().get(position));
                 BoundBackgroundService.getRawJobList().get(position).setFavorited(false);
-                Toast.makeText(this, "Non Fav", Toast.LENGTH_SHORT).show();}
+                }
             else {
             BoundBackgroundService.addJob(BoundBackgroundService.getRawJobList().get(position));
             BoundBackgroundService.getRawJobList().get(position).setFavorited(true);
-            Toast.makeText(this, "Fav", Toast.LENGTH_SHORT).show();}
+            }
         }
     }
-
-
-    @Override
-    public void onSaveInstanceState(Bundle savedInstanceState){
-        String someString = "this is a string";
-        //savedInstanceState.putSerializable(JOBLIST, BoundBackgroundService.getjoblist());
-        //declare values before saving the state
-        super.onSaveInstanceState(savedInstanceState);
-    }
-
 
     private void runLayoutAnimation(final RecyclerView recyclerView) {
         final Context context = recyclerView.getContext();
