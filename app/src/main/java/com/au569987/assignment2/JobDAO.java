@@ -1,4 +1,4 @@
-package com.example.assignment1;
+package com.au569987.assignment2;
 
 import androidx.room.Dao;
 import androidx.room.Delete;
@@ -6,12 +6,12 @@ import androidx.room.Insert;
 import androidx.room.OnConflictStrategy;
 import androidx.room.Query;
 
-import com.example.assignment1.model.JobModel;
+import com.au569987.assignment2.model.JobModel;
 
 import java.util.List;
 
 /**
- * Created by kasper on 04/10/17.
+ Room implementering er lavet med inspiration fra https://codelabs.developers.google.com/codelabs/android-room-with-a-view/?fbclid=IwAR0Ralb-PwYVCpSXFN54-E8oXwPjMV95sTbynuQhwezPdTMgZLKZS5hCkic#0
  */
 
 @Dao
