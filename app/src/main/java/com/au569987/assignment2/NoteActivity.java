@@ -1,4 +1,4 @@
-package com.example.assignment1;
+package com.au569987.assignment2;
 
 import android.content.ComponentName;
 import android.content.Context;
@@ -23,7 +23,7 @@ import android.widget.TextView;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
-import com.example.assignment1.model.JobModel;
+import com.au569987.assignment2.model.JobModel;
 
 import java.util.Locale;
 
@@ -33,8 +33,8 @@ public class NoteActivity extends AppCompatActivity {
     TextView txtScore;
     Intent intent;
     String newScore;
-    boolean applied;
-    boolean favorited;
+    boolean applied = false;
+    boolean favorited = false;
     TextView txtApplied;
     Button btnSave;
     Button btnCancel;
@@ -44,13 +44,14 @@ public class NoteActivity extends AppCompatActivity {
     EditText txtNote;
     CheckBox switchApplied;
     SeekBar seekBar;
-    String score;
+    String score = "0.0";
     ImageView imgFavorite;
-
+    Bundle msavedInstanceState;
     int position = 0;
     private BackgroundService BoundBackgroundService;
     private ServiceConnection ServiceConnection;
     private boolean bound = false;
+    JobModel TempJob = new JobModel();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -58,24 +59,26 @@ public class NoteActivity extends AppCompatActivity {
         setContentView(R.layout.activity_note);
         this.setTitle("");
         Intent intent = new Intent(this, BackgroundService.class);
-
         Intent activityIntent = getIntent();
         position = activityIntent.getIntExtra(MainActivity.JOB_INDEX, -1);
-
         bindService(intent, connection, Context.BIND_AUTO_CREATE);
+        msavedInstanceState = savedInstanceState;
+
+
 
         txtCompany = findViewById(R.id.txtCompany);
         txtLocation = findViewById(R.id.txtLocation);
         switchApplied = findViewById(R.id.SwitchApplied);
         txtStatus = findViewById(R.id.txtStatusStatic);
         seekBar = findViewById(R.id.seekBar);
-        txtApplied = findViewById(R.id.txtApplied);
         txtScore = findViewById(R.id.txtScore);
         btnCancel = findViewById(R.id.btnExit);
         btnSave = findViewById(R.id.btnSave);
         txtNote = findViewById(R.id.txtNote);
         imgFavorite = findViewById(R.id.imgFavorite);
         job = new JobModel(); // is only used to get color conversion
+
+
 
         //txtStatus.setText(intent.getStringExtra(MainActivity.JOB_STATUS));
 
@@ -89,16 +92,20 @@ public class NoteActivity extends AppCompatActivity {
                     seekBar.getThumb().setColorFilter(colorfilter);
                     seekBar.getProgressDrawable().setColorFilter(colorfilter);
                     score = Double.toString((double) i / 10);
+
+                    TempJob.setScore(Float.parseFloat(score));
                     txtScore.setText(score);
 
+                    }
                     if (i == 100) {
+                        txtScore.setText("10 ");
                         final Animation animShake = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.shake);
                         txtScore.startAnimation(animShake);
+                    }else{
+                        txtScore.setText(score);
                     }
-
-
                 }
-            }
+
 
             @Override
             public void onStartTrackingTouch(SeekBar seekBar) {
@@ -123,14 +130,11 @@ public class NoteActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 Intent returnIntent = new Intent();
-                if (score != null){
-                    BoundBackgroundService.getRawJobList().get(position).setScore(Float.parseFloat(score));}
-                BoundBackgroundService.getRawJobList().get(position).setFavorited(favorited);
                 setResult(RESULT_OK,returnIntent);
-                if (favorited) {
-                    BoundBackgroundService.addJob(BoundBackgroundService.getRawJobList().get(position));}
+                if (TempJob.getFavorited()) {
+                    BoundBackgroundService.addJob(TempJob);}
                 else {
-                    BoundBackgroundService.delJob(BoundBackgroundService.getRawJobList().get(position));}
+                    BoundBackgroundService.delJob(TempJob);}
                 finish();
             }
         });
@@ -139,6 +143,7 @@ public class NoteActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 favorited = favorited ? false : true;
+                TempJob.setFavorited(favorited);
                 setFavorite(favorited);
             }
         });
@@ -148,12 +153,12 @@ public class NoteActivity extends AppCompatActivity {
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 if(bound && BoundBackgroundService!=null) {
                     if (switchApplied.isChecked()) {
-                        BoundBackgroundService.getRawJobList().get(position).setApplied(true);
+                        TempJob.setApplied(true);
                         applied = true;
                         setAppliedText(applied);
 
                     } else {
-                        BoundBackgroundService.getRawJobList().get(position).setApplied(false);
+                        TempJob.setApplied(false);
                         applied = false;
                         setAppliedText(applied);
                     }
@@ -168,29 +173,34 @@ public class NoteActivity extends AppCompatActivity {
             BackgroundService.BackgroundServiceBinder binder = (BackgroundService.BackgroundServiceBinder) service;
             BoundBackgroundService = binder.getService();
             bound = true;
-            //Toast.makeText(getApplicationContext(), "heelele"+Integer.toString(position), Toast.LENGTH_SHORT).show();
-            txtCompany.setText(BoundBackgroundService.getRawJobList().get(position).getCompany());
-            txtLocation.setText(BoundBackgroundService.getRawJobList().get(position).getLocation());
+            if (msavedInstanceState != null){
+                TempJob =  msavedInstanceState.getParcelable("Job");
+            }else{
+            TempJob = BoundBackgroundService.RawJobList.get(position);
+            }
+            txtCompany.setText(TempJob.getCompany());
+            txtLocation.setText(TempJob.getLocation());
+            txtNote.setText(TempJob.getNote());
 
-
-            txtScore.setText(String.format(Locale.US,"%.1f",BoundBackgroundService.getRawJobList().get(position).getScore()));
-            applied = BoundBackgroundService.getRawJobList().get(position).getApplied();
+            txtScore.setText(String.format(Locale.US,"%.1f",TempJob.getScore()));
+            applied = TempJob.getApplied();
             setAppliedText(applied);
-            txtNote.setText(BoundBackgroundService.getRawJobList().get(position).getNote());
+            txtNote.setText(TempJob.getNote());
 
-            PorterDuffColorFilter colorfilter = new PorterDuffColorFilter(Color.parseColor(BoundBackgroundService.getRawJobList().get(position).getStatusColor()), PorterDuff.Mode.MULTIPLY);
+            PorterDuffColorFilter colorfilter = new PorterDuffColorFilter(Color.parseColor(TempJob.getStatusColor()), PorterDuff.Mode.MULTIPLY);
             txtScore.getBackground().setColorFilter(colorfilter);
 
             switchApplied.setChecked(applied);
 
             seekBar.setMax(100);
-            seekBar.setProgress((int) (BoundBackgroundService.getRawJobList().get(position).getScore() * 10));
+            seekBar.setProgress((int) (TempJob.getScore() * 10));
             seekBar.getThumb().setColorFilter(colorfilter);
             seekBar.getProgressDrawable().setColorFilter(colorfilter);
 
-            favorited = BoundBackgroundService.getRawJobList().get(position).getFavorited();
+            favorited = TempJob.getFavorited();
             setFavorite(favorited); // change star on note page
-        }
+            }
+
 
         @Override
         public void onServiceDisconnected(ComponentName name) {
@@ -223,6 +233,14 @@ public class NoteActivity extends AppCompatActivity {
                 imgFavorite.setImageResource(R.drawable.ic_star_border_24dp);
             }
         }
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle savedInstanceState){
+        TempJob.setNote(txtNote.getText().toString());
+        savedInstanceState.putParcelable("Job",TempJob);
+        //declare values before saving the state
+        super.onSaveInstanceState(savedInstanceState);
     }
 
 }
