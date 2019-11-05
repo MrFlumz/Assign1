@@ -1,4 +1,4 @@
-package com.example.assignment1;
+package com.au569987.assignment2;
 
 import android.content.ComponentName;
 import android.content.Context;
